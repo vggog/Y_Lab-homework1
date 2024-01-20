@@ -8,3 +8,8 @@ class MenuSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class CreateMenuSchema(BaseModel):
+    title: str
+    description: str
