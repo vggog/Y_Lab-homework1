@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -11,3 +13,8 @@ class SubmenuSchema(CreateSubmenuSchema):
 
     class Config:
         from_attributes = True
+
+
+class UpdateSubmenuSchema(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
