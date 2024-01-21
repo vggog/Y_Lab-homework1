@@ -3,7 +3,7 @@ from fastapi import Depends
 from src.core.service import BaseService
 from .repository import Repository
 from .model import MenuModel
-from .schemas import CreateMenuSchema
+from .schemas import CreateMenuSchema, UpdateMenuSchema
 
 
 class Service(BaseService):
@@ -22,3 +22,14 @@ class Service(BaseService):
 
     def create_menu(self, created_menu: CreateMenuSchema):
         return self.repository.create(**created_menu.model_dump())
+
+    def update_menu(
+            self,
+            menu_id: int,
+            updated_data: UpdateMenuSchema
+    ) -> MenuModel:
+        updated_data_dict = {
+            k: v for k, v in updated_data.model_dump().items() if v is not None
+        }
+
+        return self.repository.update(menu_id, **updated_data_dict)

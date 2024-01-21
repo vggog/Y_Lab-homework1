@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
 from .service import Service
-from .schemas import MenuSchema, CreateMenuSchema
+from .schemas import MenuSchema, CreateMenuSchema, UpdateMenuSchema
 
 
 menus_router = APIRouter(
@@ -48,3 +48,22 @@ def create_menu(
         service=Depends(Service),
 ):
     return service.create_menu(created_menu)
+
+
+@menus_router.patch(
+    "/{menu_id}",
+    response_model=MenuSchema,
+    status_code=status.HTTP_200_OK,
+)
+def update_menu(
+        menu_id: int,
+        update_menu_data: UpdateMenuSchema,
+        service=Depends(Service),
+):
+    updated_menu = service.update_menu(menu_id, update_menu_data)
+    if updated_menu is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    return updated_menu

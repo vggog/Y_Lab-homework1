@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, insert
+from sqlalchemy import create_engine, update
 from sqlalchemy.orm import Session
 
 from .model import BaseModel
@@ -26,3 +26,16 @@ class BaseRepository:
             session.refresh(created_object)
 
         return created_object
+
+    def update(self, object_id: int, **kwargs) -> _model:
+        stmt = (
+            update(self._model).
+            where(self._model.id == object_id).
+            values(**kwargs).returning()
+        )
+
+        with Session(self.engine) as session:
+            session.execute(stmt)
+            session.commit()
+
+            return session.query(self._model).filter_by(id=object_id).first()
