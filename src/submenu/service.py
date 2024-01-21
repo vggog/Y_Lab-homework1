@@ -40,3 +40,6 @@ class Service:
         }
 
         return self.repository.update(submenu_id, **updated_data_dict)
+
+    def delete_submenu(self, submenu_id: str):
+        self.repository.delete(submenu_id)

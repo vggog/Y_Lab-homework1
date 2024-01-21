@@ -80,3 +80,14 @@ def update_submenu(
         )
 
     return updated_submenu
+
+
+@submenus_router.delete(
+    "/{submenu_id}",
+    status_code=status.HTTP_200_OK,
+)
+def delete_submenu(
+        submenu_id: str,
+        service=Depends(Service),
+):
+    service.delete_submenu(submenu_id=submenu_id)
