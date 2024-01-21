@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from .menu.views import menus_router
 from .submenu.views import submenus_router
+from .dish.views import dish_router
 
 
 class AppFactory:
@@ -18,3 +19,4 @@ class AppFactory:
     def _append_routes(app: FastAPI):
         menus_router.include_router(submenus_router)
         app.include_router(menus_router)
+        app.include_router(dish_router)
