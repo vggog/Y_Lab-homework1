@@ -12,7 +12,8 @@ menus_router = APIRouter(
 
 @menus_router.get(
     "/",
-    response_model=list[MenuSchema]
+    response_model=list[MenuSchema],
+    status_code=status.HTTP_200_OK
 )
 def get_all_menus(
         service=Depends(Service),
@@ -23,6 +24,7 @@ def get_all_menus(
 @menus_router.get(
     "/{menu_id}",
     response_model=MenuSchema,
+    status_code=status.HTTP_200_OK
 )
 def get_menu_by_id(
         menu_id: str,
@@ -33,6 +35,7 @@ def get_menu_by_id(
     if menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail="menu not found",
         )
 
     return menu
@@ -64,6 +67,7 @@ def update_menu(
     if updated_menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail="menu not found",
         )
 
     return updated_menu
@@ -71,6 +75,7 @@ def update_menu(
 
 @menus_router.delete(
     "/{menu_id}",
+    status_code=status.HTTP_200_OK
 )
 def delete_menu(
         menu_id: str,
