@@ -1,7 +1,7 @@
 from fastapi import Depends
 
 from .repository import Repository
-from .schemas import CreateDishSchema
+from .schemas import CreateDishSchema, UpdateDishSchema
 from .model import DishModel
 
 
@@ -24,3 +24,14 @@ class Service:
             submenu_id=submenu_id,
             **created_dish.model_dump()
         )
+
+    def update_dish(
+            self,
+            dish_id: str,
+            updated_data: UpdateDishSchema
+    ) -> DishModel:
+        updated_data_dict = {
+            k: v for k, v in updated_data.model_dump().items() if v is not None
+        }
+
+        return self.repository.update(dish_id, **updated_data_dict)

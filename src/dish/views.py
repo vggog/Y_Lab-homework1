@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from .service import Service
-from .schemas import DishSchema, CreateDishSchema
+from .schemas import DishSchema, CreateDishSchema, UpdateDishSchema
 
 
 dish_router = APIRouter(
@@ -45,4 +45,19 @@ def create_dish(
 ):
     return service.create_dish(
         submenu_id=submenu_id, created_dish=created_dish
+    )
+
+
+@dish_router.patch(
+    "/{dish_id}",
+    response_model=DishSchema,
+    status_code=status.HTTP_200_OK,
+)
+def update_dish(
+        dish_id: str,
+        updated_dish: UpdateDishSchema,
+        service=Depends(Service),
+):
+    return service.update_dish(
+        dish_id=dish_id, updated_data=updated_dish
     )
