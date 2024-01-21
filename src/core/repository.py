@@ -17,6 +17,10 @@ class BaseRepository:
         with Session(self.engine) as session:
             return session.query(self._model).filter_by(id=object_id).first()
 
+    def get(self, **kwargs) -> _model:
+        with Session(self.engine) as session:
+            return session.query(self._model).filter_by(**kwargs).first()
+
     def get_all_by_filter(self, **kwargs) -> list[_model]:
         with Session(self.engine) as session:
             return session.query(self._model).filter_by(**kwargs).all()

@@ -16,6 +16,11 @@ class Service:
     def get_all_submenu(self, menu_id: str):
         return self.repository.get_all_submenus_of_menu(menu_id)
 
+    def get_submenu(self, submenu_id: str, menu_id: str):
+        return self.repository.get_submenu(
+            submenu_id=submenu_id, menu_id=menu_id
+        )
+
     def create_submenu(
             self,
             menu_id: str,

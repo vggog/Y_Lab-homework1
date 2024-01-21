@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
 from .service import Service
@@ -20,6 +20,26 @@ def get_all_submenus(
         service=Depends(Service),
 ):
     return service.get_all_submenu(menu_id)
+
+
+@submenus_router.get(
+    "/{submenu_id}",
+    response_model=SubmenuSchema,
+    status_code=status.HTTP_200_OK
+)
+def get_submenu(
+        submenu_id: str,
+        menu_id: str,
+        service=Depends(Service),
+):
+    submenu = service.get_submenu(submenu_id=submenu_id, menu_id=menu_id)
+    if submenu is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="submenu not found",
+        )
+
+    return submenu
 
 
 @submenus_router.post(
