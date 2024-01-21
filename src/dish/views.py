@@ -61,3 +61,14 @@ def update_dish(
     return service.update_dish(
         dish_id=dish_id, updated_data=updated_dish
     )
+
+
+@dish_router.delete(
+    "/{dish_id}",
+    status_code=status.HTTP_200_OK,
+)
+def delete_dish(
+        dish_id: str,
+        service=Depends(Service),
+):
+    service.delete_dish(dish_id)

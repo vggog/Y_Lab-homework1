@@ -35,3 +35,6 @@ class Service:
         }
 
         return self.repository.update(dish_id, **updated_data_dict)
+
+    def delete_dish(self, dish_id: str):
+        self.repository.delete(dish_id)
