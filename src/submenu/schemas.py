@@ -1,10 +1,13 @@
 from pydantic import BaseModel
 
 
-class SubmenuSchema(BaseModel):
-    id: str
+class CreateSubmenuSchema(BaseModel):
     title: str
     description: str
+
+
+class SubmenuSchema(CreateSubmenuSchema):
+    id: str
 
     class Config:
         from_attributes = True
