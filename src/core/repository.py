@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, update
+from sqlalchemy import create_engine, update, delete
 from sqlalchemy.orm import Session
 
 from .model import BaseModel
@@ -39,3 +39,13 @@ class BaseRepository:
             session.commit()
 
             return session.query(self._model).filter_by(id=object_id).first()
+
+    def delete(self, object_id: int):
+        stmt = (
+            delete(self._model).
+            where(self._model.id == object_id)
+        )
+
+        with Session(self.engine) as session:
+            session.execute(stmt)
+            session.commit()

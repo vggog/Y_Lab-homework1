@@ -33,3 +33,6 @@ class Service(BaseService):
         }
 
         return self.repository.update(menu_id, **updated_data_dict)
+
+    def delete_menu(self, menu_id: int):
+        return self.repository.delete(menu_id)

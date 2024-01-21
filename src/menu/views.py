@@ -67,3 +67,13 @@ def update_menu(
         )
 
     return updated_menu
+
+
+@menus_router.delete(
+    "/{menu_id}",
+)
+def delete_menu(
+        menu_id: int,
+        service=Depends(Service),
+):
+    service.delete_menu(menu_id)
