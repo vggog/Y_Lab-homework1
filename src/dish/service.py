@@ -2,6 +2,7 @@ from fastapi import Depends
 
 from .repository import Repository
 from .schemas import CreateDishSchema
+from .model import DishModel
 
 
 class Service:
@@ -14,6 +15,9 @@ class Service:
 
     def get_all_dishes(self):
         return self.repository.get_all()
+
+    def get_dish(self, dish_id: str) -> DishModel:
+        return self.repository.get_by_id(dish_id)
 
     def create_dish(self, submenu_id: str, created_dish: CreateDishSchema):
         return self.repository.create(

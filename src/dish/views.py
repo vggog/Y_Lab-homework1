@@ -21,6 +21,18 @@ def get_all_dishes(
     return service.get_all_dishes()
 
 
+@dish_router.get(
+    "/{dish_id}",
+    response_model=DishSchema,
+    status_code=status.HTTP_200_OK,
+)
+def get_dish(
+        dish_id: str,
+        service=Depends(Service),
+):
+    return service.get_dish(dish_id)
+
+
 @dish_router.post(
     "/",
     response_model=DishSchema,
