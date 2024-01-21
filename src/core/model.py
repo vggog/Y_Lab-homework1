@@ -16,3 +16,6 @@ class BaseModel(DeclarativeBase):
         default=datetime.utcnow(),
         onupdate=datetime.utcnow()
     )
+
+    title: Mapped[str]
+    description: Mapped[str]
