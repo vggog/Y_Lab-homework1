@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class MenuSchema(BaseModel):
-    id: int
+    id: str
     title: str
     description: str
 

@@ -17,7 +17,7 @@ class Service(BaseService):
     def get_all_menus(self) -> list[MenuModel]:
         return self.repository.get_all()
 
-    def get_menu(self, menu_id: int) -> MenuModel:
+    def get_menu(self, menu_id: str) -> MenuModel:
         return self.repository.get_by_id(menu_id)
 
     def create_menu(self, created_menu: CreateMenuSchema):
@@ -25,7 +25,7 @@ class Service(BaseService):
 
     def update_menu(
             self,
-            menu_id: int,
+            menu_id: str,
             updated_data: UpdateMenuSchema
     ) -> MenuModel:
         updated_data_dict = {
@@ -34,5 +34,5 @@ class Service(BaseService):
 
         return self.repository.update(menu_id, **updated_data_dict)
 
-    def delete_menu(self, menu_id: int):
+    def delete_menu(self, menu_id: str):
         return self.repository.delete(menu_id)

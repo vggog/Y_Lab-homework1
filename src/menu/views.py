@@ -25,7 +25,7 @@ def get_all_menus(
     response_model=MenuSchema,
 )
 def get_menu_by_id(
-        menu_id: int,
+        menu_id: str,
         service=Depends(Service),
 ):
     menu = service.get_menu(menu_id)
@@ -56,7 +56,7 @@ def create_menu(
     status_code=status.HTTP_200_OK,
 )
 def update_menu(
-        menu_id: int,
+        menu_id: str,
         update_menu_data: UpdateMenuSchema,
         service=Depends(Service),
 ):
@@ -73,7 +73,7 @@ def update_menu(
     "/{menu_id}",
 )
 def delete_menu(
-        menu_id: int,
+        menu_id: str,
         service=Depends(Service),
 ):
     service.delete_menu(menu_id)

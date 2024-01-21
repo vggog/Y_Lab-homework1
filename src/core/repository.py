@@ -13,7 +13,7 @@ class BaseRepository:
         with Session(self.engine) as session:
             return session.query(self._model).all()
 
-    def get_by_id(self, object_id: int) -> _model:
+    def get_by_id(self, object_id: str) -> _model:
         with Session(self.engine) as session:
             return session.query(self._model).filter_by(id=object_id).first()
 
@@ -27,7 +27,7 @@ class BaseRepository:
 
         return created_object
 
-    def update(self, object_id: int, **kwargs) -> _model:
+    def update(self, object_id: str, **kwargs) -> _model:
         stmt = (
             update(self._model).
             where(self._model.id == object_id).
@@ -40,7 +40,7 @@ class BaseRepository:
 
             return session.query(self._model).filter_by(id=object_id).first()
 
-    def delete(self, object_id: int):
+    def delete(self, object_id: str):
         stmt = (
             delete(self._model).
             where(self._model.id == object_id)
