@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
 from .service import Service
@@ -30,7 +30,14 @@ def get_dish(
         dish_id: str,
         service=Depends(Service),
 ):
-    return service.get_dish(dish_id)
+    dish = service.get_dish(dish_id)
+    if dish is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="dish not found",
+        )
+
+    return dish
 
 
 @dish_router.post(
@@ -58,9 +65,16 @@ def update_dish(
         updated_dish: UpdateDishSchema,
         service=Depends(Service),
 ):
-    return service.update_dish(
+    dish = service.update_dish(
         dish_id=dish_id, updated_data=updated_dish
     )
+    if dish is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="dish not found",
+        )
+
+    return dish
 
 
 @dish_router.delete(
