@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
 from .service import Service
@@ -18,6 +18,24 @@ def get_all_menus(
         service=Depends(Service),
 ):
     return service.get_all_menus()
+
+
+@menus_router.get(
+    "/{menu_id}",
+    response_model=MenuSchema,
+)
+def get_menu_by_id(
+        menu_id: int,
+        service=Depends(Service),
+):
+    menu = service.get_menu(menu_id)
+
+    if menu is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    return menu
 
 
 @menus_router.post(

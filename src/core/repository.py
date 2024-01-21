@@ -13,6 +13,10 @@ class BaseRepository:
         with Session(self.engine) as session:
             return session.query(self._model).all()
 
+    def get_by_id(self, object_id: int) -> _model:
+        with Session(self.engine) as session:
+            return session.query(self._model).filter_by(id=object_id).first()
+
     def create(self, **kwargs) -> _model:
         created_object = self._model(**kwargs)
 

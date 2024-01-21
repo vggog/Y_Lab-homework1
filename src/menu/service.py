@@ -17,5 +17,8 @@ class Service(BaseService):
     def get_all_menus(self) -> list[MenuModel]:
         return self.repository.get_all()
 
+    def get_menu(self, menu_id: int) -> MenuModel:
+        return self.repository.get_by_id(menu_id)
+
     def create_menu(self, created_menu: CreateMenuSchema):
         return self.repository.create(**created_menu.model_dump())
