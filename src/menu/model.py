@@ -9,5 +9,7 @@ class MenuModel(BaseModel):
     __tablename__ = "menu"
 
     submenus: Mapped[list["SubmenuModel"]] = relationship(
-        cascade="all, delete"
+        back_populates="menu",
+        cascade="all, delete",
+        passive_deletes=True,
     )

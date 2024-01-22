@@ -8,7 +8,17 @@ from src.dish.model import DishModel
 class SubmenuModel(BaseModel):
     __tablename__ = "submenu"
 
-    menu_id: Mapped[str] = mapped_column(ForeignKey("menu.id"))
+    menu_id: Mapped[str] = mapped_column(
+        ForeignKey(
+            "menu.id",
+            ondelete="CASCADE",
+        )
+    )
+    menu: Mapped["MenuModel"] = relationship(
+        back_populates="submenus",
+    )
     dishes: Mapped[list["DishModel"]] = relationship(
-        cascade="all, delete"
+        back_populates="submenu",
+        cascade="all, delete",
+        passive_deletes=True,
     )
