@@ -57,3 +57,23 @@ class BaseRepository:
         with Session(self.engine) as session:
             session.execute(stmt)
             session.commit()
+
+    def increment(self, object_id: str, column: str):
+        with Session(self.engine) as session:
+            (
+                session.
+                query(self._model).
+                filter_by(id=object_id).
+                update({column: getattr(self._model, column) + 1})
+            )
+            session.commit()
+
+    def decrement(self, object_id: str, column: str):
+        with Session(self.engine) as session:
+            (
+                session.
+                query(self._model).
+                filter_by(id=object_id).
+                update({column: getattr(self._model, column) - 1})
+            )
+            session.commit()

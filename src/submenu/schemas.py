@@ -10,6 +10,7 @@ class CreateSubmenuSchema(BaseModel):
 
 class SubmenuSchema(CreateSubmenuSchema):
     id: str
+    dishes_count: int
 
     class Config:
         from_attributes = True

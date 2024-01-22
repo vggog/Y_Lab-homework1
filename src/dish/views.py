@@ -46,12 +46,13 @@ def get_dish(
     status_code=status.HTTP_201_CREATED,
 )
 def create_dish(
+        menu_id: str,
         submenu_id: str,
         created_dish: CreateDishSchema,
         service=Depends(Service),
 ):
     return service.create_dish(
-        submenu_id=submenu_id, created_dish=created_dish
+        menu_id=menu_id, submenu_id=submenu_id, created_dish=created_dish
     )
 
 
@@ -82,7 +83,9 @@ def update_dish(
     status_code=status.HTTP_200_OK,
 )
 def delete_dish(
+        menu_id: str,
+        submenu_id: str,
         dish_id: str,
         service=Depends(Service),
 ):
-    service.delete_dish(dish_id)
+    service.delete_dish(menu_id, submenu_id, dish_id)
