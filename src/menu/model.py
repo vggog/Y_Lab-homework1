@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from src.core.model import BaseModel
 
@@ -12,4 +12,10 @@ class MenuModel(BaseModel):
         back_populates="menu",
         cascade="all, delete",
         passive_deletes=True,
+    )
+    submenus_count: Mapped[int] = mapped_column(
+        default=0,
+    )
+    dishes_count: Mapped[int] = mapped_column(
+        default=0,
     )

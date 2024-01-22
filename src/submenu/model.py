@@ -22,3 +22,6 @@ class SubmenuModel(BaseModel):
         cascade="all, delete",
         passive_deletes=True,
     )
+    dishes_count: Mapped[int] = mapped_column(
+        default=0,
+    )
