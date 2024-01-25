@@ -148,6 +148,51 @@ def test_update_menu():
     menu_data["description"] = updated_menu["description"]
 
 
+def test_number_of_submenu_and_dishes():
+    menu_id = menu_data["id"]
+
+    response = client.post(
+        f"/menus/{menu_id}/submenus",
+        json={
+            "title": "submenu 1",
+            "description": "description of submenu 1",
+        }
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    submenu_id = response.json()["id"]
+
+    response = client.post(
+        f"/menus/{menu_id}/submenus/{submenu_id}/dishes",
+        json={
+            "title": "dish 1",
+            "description": "description of dish 1",
+            "price": "12.90",
+        }
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = client.post(
+        f"/menus/{menu_id}/submenus/{submenu_id}/dishes",
+        json={
+            "title": "dish 2",
+            "description": "description of dish 2",
+            "price": "13.00",
+        }
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+    response = client.get(f"/menus/{menu_id}")
+
+    response_data = response.json()
+
+    assert "submenus_count" in response_data.keys()
+    assert "dishes_count" in response_data.keys()
+
+    assert response_data["submenus_count"] == 1
+    assert response_data["dishes_count"] == 2
+
+
 def test_delete_menu():
     """
     Тест ручки для удаления меню.
