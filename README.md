@@ -10,6 +10,26 @@ docker-compose build
 ```commandline
 docker-compose up
 ```
+
+## Тесты
+Для запуска тестов необходимо создать заполнить файл 
+.env_test(в качестве примера - файл .env_test_example) в корневой директории проекта.
+1. Собрать докер с тестами
+```commandline
+docker-compose -f docker-compose-test.yaml build
+```
+2. Запустить тесты
+```commandline
+docker-compose -f docker-compose-test.yaml up --abort-on-container-exit
+```
+
+## Ответ на 3-й вопрос
+Файл src/menu/model.py  
+Класс MenuModel, атрибуты submenus_count и dishes_count
+
+Файл src/submenu/model.py  
+Класс SubmenuModel, атрибут dishes_count
+
 ## ТЗ домашеного задания
 Написать проект на FastAPI с использованием PostgreSQL в качестве БД.  
 В проекте следует реализовать REST API по работе с меню ресторана, все CRUD операции.  
