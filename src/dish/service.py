@@ -27,7 +27,6 @@ class Service:
 
     def create_dish(
             self,
-            menu_id: int,
             submenu_id: str,
             created_dish: CreateDishSchema
     ) -> DishModel:
@@ -35,9 +34,6 @@ class Service:
             submenu_id=submenu_id,
             **created_dish.model_dump()
         )
-
-        self.submenu_repository.increment_dish(submenu_id)
-        self.menu_repository.increment_dish(menu_id)
 
         return dish
 
@@ -52,14 +48,5 @@ class Service:
 
         return self.repository.update(dish_id, **updated_data_dict)
 
-    def delete_dish(
-            self,
-            menu_id: int,
-            submenu_id: str,
-            dish_id: str
-    ):
-        if self.repository.get_by_id(dish_id):
-            self.submenu_repository.decrement_dish(submenu_id)
-            self.menu_repository.decrement_dish(menu_id)
-
+    def delete_dish(self, dish_id: str):
         self.repository.delete(dish_id)

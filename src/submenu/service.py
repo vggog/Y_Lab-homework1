@@ -29,11 +29,11 @@ class Service:
             menu_id: str,
             created_submenu: CreateSubmenuSchema
     ) -> SubmenuModel:
-
         submenu = self.repository.create(
-            menu_id=menu_id, **created_submenu.model_dump()
+            menu_id=menu_id,
+            **created_submenu.model_dump(),
         )
-        self.menu_repository.increment_submenu(menu_id=menu_id)
+
         return submenu
 
     def update_submenu(
@@ -47,13 +47,5 @@ class Service:
 
         return self.repository.update(submenu_id, **updated_data_dict)
 
-    def delete_submenu(self, menu_id: str, submenu_id: str):
-        submenu = self.repository.get_by_id(submenu_id)
-        if submenu is None:
-            return
-
-        self.menu_repository.decrement_submenu(menu_id=menu_id)
-        self.menu_repository.subtract_the_number_of_dishes(
-            menu_id=menu_id, count=submenu.dishes_count,
-        )
+    def delete_submenu(self, submenu_id: str):
         self.repository.delete(submenu_id)

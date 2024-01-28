@@ -87,9 +87,7 @@ def update_submenu(
     status_code=status.HTTP_200_OK,
 )
 def delete_submenu(
-        menu_id: str,
         submenu_id: str,
         service=Depends(Service),
 ):
-
-    service.delete_submenu(menu_id=menu_id, submenu_id=submenu_id)
+    service.delete_submenu(submenu_id=submenu_id)
