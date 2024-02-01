@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 
@@ -17,6 +15,6 @@ class DishSchema(CreateDishSchema):
 
 
 class UpdateDishSchema(BaseModel):
-    price: Optional[str] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
+    price: str | None = None
+    title: str | None = None
+    description: str | None = None

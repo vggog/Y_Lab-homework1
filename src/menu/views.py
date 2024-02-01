@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from .schemas import CreateMenuSchema, MenuSchema, UpdateMenuSchema
 from .service import Service
-from .schemas import MenuSchema, CreateMenuSchema, UpdateMenuSchema
-
 
 menus_router = APIRouter(
     prefix='/menus',
@@ -11,7 +10,7 @@ menus_router = APIRouter(
 
 
 @menus_router.get(
-    "/",
+    '/',
     response_model=list[MenuSchema],
     status_code=status.HTTP_200_OK
 )
@@ -22,7 +21,7 @@ def get_all_menus(
 
 
 @menus_router.get(
-    "/{menu_id}",
+    '/{menu_id}',
     response_model=MenuSchema,
     status_code=status.HTTP_200_OK
 )
@@ -35,14 +34,14 @@ def get_menu_by_id(
     if menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="menu not found",
+            detail='menu not found',
         )
 
     return menu
 
 
 @menus_router.post(
-    "/",
+    '/',
     response_model=MenuSchema,
     status_code=status.HTTP_201_CREATED,
 )
@@ -54,7 +53,7 @@ def create_menu(
 
 
 @menus_router.patch(
-    "/{menu_id}",
+    '/{menu_id}',
     response_model=MenuSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -67,14 +66,14 @@ def update_menu(
     if updated_menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="menu not found",
+            detail='menu not found',
         )
 
     return updated_menu
 
 
 @menus_router.delete(
-    "/{menu_id}",
+    '/{menu_id}',
     status_code=status.HTTP_200_OK
 )
 def delete_menu(

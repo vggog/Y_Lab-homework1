@@ -1,23 +1,23 @@
 from uuid import uuid4
 
-from sqlalchemy import select, func, and_
-from sqlalchemy.orm import Mapped, relationship, mapped_column, column_property
+from sqlalchemy import and_, func, select
+from sqlalchemy.orm import Mapped, column_property, mapped_column, relationship
 
 from src.core.model import BaseModel
-from src.submenu.model import SubmenuModel
 from src.dish.model import DishModel
+from src.submenu.model import SubmenuModel
 
 
 class MenuModel(BaseModel):
-    __tablename__ = "menu"
+    __tablename__ = 'menu'
     id: Mapped[str] = mapped_column(
         primary_key=True,
         default=lambda: str(uuid4()),
     )
 
-    submenus: Mapped[list["SubmenuModel"]] = relationship(
-        back_populates="menu",
-        cascade="all, delete",
+    submenus: Mapped[list['SubmenuModel']] = relationship(
+        back_populates='menu',
+        cascade='all, delete',
         passive_deletes=True,
     )
     submenus_count: Mapped[int] = column_property(

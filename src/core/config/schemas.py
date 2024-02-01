@@ -12,10 +12,10 @@ class DBConfig:
     @property
     def alchemy_url(self) -> str:
         return (
-            "{dialect_driver}"
-            "://{username}:{password}@{host}:{port}/{database}"
+            '{dialect_driver}'
+            '://{username}:{password}@{host}:{port}/{database}'
         ).format(
-            dialect_driver="postgresql+psycopg2",
+            dialect_driver='postgresql+psycopg2',
             username=self.user,
             password=self.password,
             host=self.host,

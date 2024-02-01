@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
+from .dish.views import dish_router
 from .menu.views import menus_router
 from .submenu.views import submenus_router
-from .dish.views import dish_router
 
 
 class AppFactory:
@@ -10,7 +10,7 @@ class AppFactory:
     @classmethod
     def create_app(cls) -> FastAPI:
         app = FastAPI(
-            root_path="/api/v1"
+            root_path='/api/v1'
         )
         cls._append_routes(app)
         return app

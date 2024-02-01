@@ -1,10 +1,11 @@
 from fastapi import Depends
 
-from .repository import Repository
 from src.menu.repository import Repository as MenuRepository
 from src.submenu.repository import Repository as SubmenuRepository
-from .schemas import CreateDishSchema, UpdateDishSchema
+
 from .model import DishModel
+from .repository import Repository
+from .schemas import CreateDishSchema, UpdateDishSchema
 
 
 class Service:

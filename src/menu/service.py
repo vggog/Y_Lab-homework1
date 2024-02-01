@@ -1,8 +1,9 @@
 from fastapi import Depends
 
 from src.core.service import BaseService
-from .repository import Repository
+
 from .model import MenuModel
+from .repository import Repository
 from .schemas import CreateMenuSchema, UpdateMenuSchema
 
 

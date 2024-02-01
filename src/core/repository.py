@@ -1,14 +1,12 @@
-from typing import Type
-
-from sqlalchemy import create_engine, update, delete
+from sqlalchemy import create_engine, delete, update
 from sqlalchemy.orm import Session
 
-from .model import BaseModel
 from .config import db_config
+from .model import BaseModel
 
 
 class BaseRepository:
-    _model: Type[BaseModel] = NotImplemented
+    _model: type[BaseModel] = NotImplemented
     engine = create_engine(db_config.alchemy_url)
 
     def get_all(self) -> list[BaseModel]:
