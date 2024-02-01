@@ -19,7 +19,7 @@ def test_create_menu_for_counting_test():
     :return:
     """
     response = client.post(
-        f"/menus",
+        "/menus",
         json=menu_data,
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -100,7 +100,7 @@ def test_check_menu():
 
     assert response.status_code == status.HTTP_200_OK
 
-    response_data: dict = response.json()
+    response_data = response.json()
 
     assert "id" in response_data.keys()
     assert "submenus_count" in response_data.keys()
@@ -182,7 +182,7 @@ def test_check_menu_2():
 
     assert response.status_code == status.HTTP_200_OK
 
-    response_data: dict = response.json()
+    response_data = response.json()
 
     assert "id" in response_data.keys()
     assert "submenus_count" in response_data.keys()

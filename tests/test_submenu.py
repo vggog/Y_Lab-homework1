@@ -250,7 +250,7 @@ def teardown_module():
     Удалить созданное меню.
     :return:
     """
-    repo: MenuRepository = MenuRepository()
+    repo = MenuRepository()
     menu_id = menu_data["id"]
 
     repo.delete(menu_id)

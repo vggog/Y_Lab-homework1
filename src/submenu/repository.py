@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-
 from src.core.repository import BaseRepository
 from .model import SubmenuModel
 

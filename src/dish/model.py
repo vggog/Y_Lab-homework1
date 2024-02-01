@@ -21,7 +21,8 @@ class DishModel(BaseModel):
             ondelete="CASCADE"
         )
     )
-    submenu: Mapped["SubmenuModel"] = relationship(
+    submenu = relationship(
+        "SubmenuModel",
         back_populates="dishes",
         cascade="all, delete",
     )

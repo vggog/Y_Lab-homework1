@@ -85,9 +85,12 @@ def test_create_dish(
     dish_data["id"] = dish_id
     dish = repo.get_by_id(dish_id)
 
-    assert dish.title == dish_data["title"]
-    assert dish.description == dish_data["description"]
-    assert dish.price == dish_data["price"]
+    if dish is None:
+        assert dish
+    else:
+        assert dish.title == dish_data["title"]
+        assert dish.description == dish_data["description"]
+        assert dish.price == dish_data["price"]
 
 
 def test_get_dish():
@@ -143,9 +146,12 @@ def test_update_title_of_dish(
 
     dish = repo.get_by_id(dish_id)
 
-    assert dish.title == updated_title["title"]
-    assert dish.description == dish_data["description"]
-    assert dish.price == dish_data["price"]
+    if dish is None:
+        assert dish
+    else:
+        assert dish.title == updated_title["title"]
+        assert dish.description == dish_data["description"]
+        assert dish.price == dish_data["price"]
 
     dish_data["title"] = updated_title["title"]
 
@@ -181,9 +187,12 @@ def test_update_description_of_dish(
 
     dish = repo.get_by_id(dish_id)
 
-    assert dish.title == dish_data["title"]
-    assert dish.description == updated_description["description"]
-    assert dish.price == dish_data["price"]
+    if dish is None:
+        assert dish
+    else:
+        assert dish.title == dish_data["title"]
+        assert dish.description == updated_description["description"]
+        assert dish.price == dish_data["price"]
 
     dish_data["description"] = updated_description["description"]
 
@@ -219,9 +228,12 @@ def test_update_price_of_dish(
 
     dish = repo.get_by_id(dish_id)
 
-    assert dish.title == dish_data["title"]
-    assert dish.description == dish_data["description"]
-    assert dish.price == updated_price["price"]
+    if dish is None:
+        assert dish
+    else:
+        assert dish.title == dish_data["title"]
+        assert dish.description == dish_data["description"]
+        assert dish.price == updated_price["price"]
 
     dish_data["price"] = updated_price["price"]
 
@@ -259,9 +271,12 @@ def test_update_dish(
 
     dish = repo.get_by_id(dish_id)
 
-    assert dish.title == updated_dish["title"]
-    assert dish.description == updated_dish["description"]
-    assert dish.price == updated_dish["price"]
+    if dish is None:
+        assert dish
+    else:
+        assert dish.title == updated_dish["title"]
+        assert dish.description == updated_dish["description"]
+        assert dish.price == updated_dish["price"]
 
 
 def test_delete_dish(
@@ -289,7 +304,7 @@ def teardown_module():
     Удаление созданных меню и сабменю.
     :return:
     """
-    repo: MenuRepository = MenuRepository()
+    repo = MenuRepository()
     menu_id = menu_data["id"]
 
     repo.delete(menu_id)

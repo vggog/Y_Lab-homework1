@@ -1,3 +1,5 @@
+from typing import Type
+
 from sqlalchemy import create_engine, update, delete
 from sqlalchemy.orm import Session
 
@@ -6,26 +8,26 @@ from .config import db_config
 
 
 class BaseRepository:
-    _model: BaseModel = NotImplemented
+    _model: Type[BaseModel] = NotImplemented
     engine = create_engine(db_config.alchemy_url)
 
-    def get_all(self) -> list[_model]:
+    def get_all(self) -> list[BaseModel]:
         with Session(self.engine) as session:
             return session.query(self._model).all()
 
-    def get_by_id(self, object_id: str) -> _model:
+    def get_by_id(self, object_id: str) -> BaseModel | None:
         with Session(self.engine) as session:
             return session.query(self._model).filter_by(id=object_id).first()
 
-    def get(self, **kwargs) -> _model:
+    def get(self, **kwargs) -> BaseModel | None:
         with Session(self.engine) as session:
             return session.query(self._model).filter_by(**kwargs).first()
 
-    def get_all_by_filter(self, **kwargs) -> list[_model]:
+    def get_all_by_filter(self, **kwargs) -> list[BaseModel]:
         with Session(self.engine) as session:
             return session.query(self._model).filter_by(**kwargs).all()
 
-    def create(self, **kwargs) -> _model:
+    def create(self, **kwargs) -> BaseModel:
         created_object = self._model(**kwargs)
 
         with Session(self.engine) as session:
@@ -35,7 +37,7 @@ class BaseRepository:
 
         return created_object
 
-    def update(self, object_id: str, **kwargs) -> _model:
+    def update(self, object_id: str, **kwargs) -> BaseModel | None:
         stmt = (
             update(self._model).
             where(self._model.id == object_id).

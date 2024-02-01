@@ -33,7 +33,7 @@ def test_add_menus():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response_data: dict = response.json()
+    response_data = response.json()
     assert response_data.get("id")
     assert response_data.get("title")
     assert response_data.get("description")
@@ -60,7 +60,7 @@ def test_get_menu():
     response = client.get(f"/menus/{ menu_id}")
     assert response.status_code == status.HTTP_200_OK
 
-    response_data: dict = response.json()
+    response_data = response.json()
     assert response_data.get("id")
     assert response_data.get("title")
     assert response_data.get("description")
@@ -85,7 +85,7 @@ def test_update_title_of_menu():
         json=updated_title,
     )
     assert response.status_code == status.HTTP_200_OK
-    response_data: dict = response.json()
+    response_data = response.json()
 
     assert response_data["title"] == updated_title["title"]
     assert response_data["description"] == menu_data["description"]
@@ -109,7 +109,7 @@ def test_update_description_of_menu():
         json=updated_description,
     )
     assert response.status_code == status.HTTP_200_OK
-    response_data: dict = response.json()
+    response_data = response.json()
 
     assert response_data["title"] == menu_data["title"]
     assert response_data["description"] == updated_description["description"]
@@ -136,7 +136,7 @@ def test_update_menu():
 
     assert response.status_code == status.HTTP_200_OK
 
-    response_data: dict = response.json()
+    response_data = response.json()
     assert response_data.get("id")
     assert response_data.get("title")
     assert response_data.get("description")
