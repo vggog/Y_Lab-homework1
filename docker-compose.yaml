@@ -27,8 +27,21 @@ services:
     container_name: ylab-back
     restart: always
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_storage:/data
+    networks:
+      - ylab-network
+
+    container_name: ylab-redis
+
+
 networks:
   ylab-network:
 
 volumes:
   ylab_db:
+  redis_storage:

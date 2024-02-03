@@ -22,3 +22,11 @@ class DBConfig:
             port=self.port,
             database=self.db,
         )
+
+
+@dataclass
+class RedisConfig:
+    host: str
+    port: int
+    charset: str
+    decode_response: bool
