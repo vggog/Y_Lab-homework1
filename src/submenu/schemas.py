@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from src.dish.schemas import DishSchema
+
 
 class CreateSubmenuSchema(BaseModel):
     title: str
@@ -11,6 +13,7 @@ class CreateSubmenuSchema(BaseModel):
 class SubmenuSchema(CreateSubmenuSchema):
     id: str
     dishes_count: int
+    dishes: list[DishSchema]
 
     class Config:
         from_attributes = True

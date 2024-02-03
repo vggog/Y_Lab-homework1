@@ -25,6 +25,7 @@ class SubmenuModel(BaseModel):
         back_populates="submenus",
     )
     dishes: Mapped[list["DishModel"]] = relationship(
+        lazy="selectin",
         back_populates="submenu",
         cascade="all, delete",
         passive_deletes=True,

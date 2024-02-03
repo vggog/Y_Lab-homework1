@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, inspect
 from sqlalchemy.orm import Mapped, relationship, mapped_column, column_property
 
 from src.core.model import BaseModel
@@ -16,6 +16,7 @@ class MenuModel(BaseModel):
     )
 
     submenus: Mapped[list["SubmenuModel"]] = relationship(
+        lazy="selectin",
         back_populates="menu",
         cascade="all, delete",
         passive_deletes=True,
@@ -45,3 +46,7 @@ class MenuModel(BaseModel):
         correlate_except(DishModel).
         scalar_subquery()
     )
+
+    @staticmethod
+    def to_dict(model):
+        return {c.name: getattr(model, c.name) for c in model.__table__.columns}
