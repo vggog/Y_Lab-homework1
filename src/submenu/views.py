@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from .schemas import CreateSubmenuSchema, SubmenuSchema, UpdateSubmenuSchema
 from .service import Service
-from .schemas import SubmenuSchema, CreateSubmenuSchema, UpdateSubmenuSchema
-
 
 submenus_router = APIRouter(
     prefix='/{menu_id}/submenus',
@@ -11,7 +10,7 @@ submenus_router = APIRouter(
 
 
 @submenus_router.get(
-    "/",
+    '/',
     response_model=list[SubmenuSchema],
     status_code=status.HTTP_200_OK
 )
@@ -23,7 +22,7 @@ def get_all_submenus(
 
 
 @submenus_router.get(
-    "/{submenu_id}",
+    '/{submenu_id}',
     response_model=SubmenuSchema,
     status_code=status.HTTP_200_OK
 )
@@ -36,14 +35,14 @@ def get_submenu(
     if submenu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="submenu not found",
+            detail='submenu not found',
         )
 
     return submenu
 
 
 @submenus_router.post(
-    "/",
+    '/',
     response_model=SubmenuSchema,
     status_code=status.HTTP_201_CREATED,
 )
@@ -59,7 +58,7 @@ def create_submenu(
 
 
 @submenus_router.patch(
-    "/{submenu_id}",
+    '/{submenu_id}',
     response_model=SubmenuSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -76,14 +75,14 @@ def update_submenu(
     if updated_submenu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="submenu not found",
+            detail='submenu not found',
         )
 
     return updated_submenu
 
 
 @submenus_router.delete(
-    "/{submenu_id}",
+    '/{submenu_id}',
     status_code=status.HTTP_200_OK,
 )
 def delete_submenu(

@@ -1,14 +1,13 @@
-import pickle
-import json
-
 from fastapi import Depends
 
 from src.core.service import BaseService
-from .repository import Repository
+
 from .model import MenuModel
-from .schemas import CreateMenuSchema, UpdateMenuSchema, MenuSchema
+from .schemas import MenuSchema
 from src.core.cache import Cache
 from src.submenu.repository import Repository as SubmenuRepository
+from .repository import Repository
+from .schemas import CreateMenuSchema, UpdateMenuSchema
 
 
 class Service(BaseService):

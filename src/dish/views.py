@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from .schemas import CreateDishSchema, DishSchema, UpdateDishSchema
 from .service import Service
-from .schemas import DishSchema, CreateDishSchema, UpdateDishSchema
-
 
 dish_router = APIRouter(
     prefix='/menus/{menu_id}/submenus/{submenu_id}/dishes',
@@ -11,7 +10,7 @@ dish_router = APIRouter(
 
 
 @dish_router.get(
-    "/",
+    '/',
     response_model=list[DishSchema],
     status_code=status.HTTP_200_OK
 )
@@ -22,7 +21,7 @@ def get_all_dishes(
 
 
 @dish_router.get(
-    "/{dish_id}",
+    '/{dish_id}',
     response_model=DishSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -34,14 +33,14 @@ def get_dish(
     if dish is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="dish not found",
+            detail='dish not found',
         )
 
     return dish
 
 
 @dish_router.post(
-    "/",
+    '/',
     response_model=DishSchema,
     status_code=status.HTTP_201_CREATED,
 )
@@ -59,7 +58,7 @@ def create_dish(
 
 
 @dish_router.patch(
-    "/{dish_id}",
+    '/{dish_id}',
     response_model=DishSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -74,14 +73,14 @@ def update_dish(
     if dish is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="dish not found",
+            detail='dish not found',
         )
 
     return dish
 
 
 @dish_router.delete(
-    "/{dish_id}",
+    '/{dish_id}',
     status_code=status.HTTP_200_OK,
 )
 def delete_dish(

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel
 
 from src.dish.schemas import DishSchema
@@ -20,5 +18,5 @@ class SubmenuSchema(CreateSubmenuSchema):
 
 
 class UpdateSubmenuSchema(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    title: str | None = None
+    description: str | None = None

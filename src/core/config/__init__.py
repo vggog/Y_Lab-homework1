@@ -8,11 +8,11 @@ from src.core.config.schemas import DBConfig, RedisConfig
 load_dotenv()
 
 db_config = DBConfig(
-    db=os.getenv("POSTGRES_DB"),
-    user=os.getenv("POSTGRES_USER"),
-    password=os.getenv("POSTGRES_PASSWORD"),
-    host=os.getenv("POSTGRES_HOST"),
-    port=os.getenv("POSTGRES_PORT")
+    db=os.getenv('POSTGRES_DB'),
+    user=os.getenv('POSTGRES_USER'),
+    password=os.getenv('POSTGRES_PASSWORD'),
+    host=os.getenv('POSTGRES_HOST'),
+    port=os.getenv('POSTGRES_PORT')
 )
 
 

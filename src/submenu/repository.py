@@ -1,6 +1,5 @@
-from sqlalchemy.orm import Session
-
 from src.core.repository import BaseRepository
+
 from .model import SubmenuModel
 
 
@@ -14,7 +13,7 @@ class Repository(BaseRepository):
         return self.get(id=submenu_id, menu_id=menu_id)
 
     def increment_dish(self, submenu_id: str):
-        self.increment(submenu_id, "dishes_count")
+        self.increment(submenu_id, 'dishes_count')
 
     def decrement_dish(self, submenu_id: str):
-        self.decrement(submenu_id, "dishes_count")
+        self.decrement(submenu_id, 'dishes_count')
