@@ -9,21 +9,13 @@ class BaseRepository:
     _model: type[BaseModel] = NotImplemented
     engine = create_engine(db_config.alchemy_url)
 
-    def get_all(self) -> list[BaseModel]:
+    def get_all(self, **filters) -> list[BaseModel]:
         with Session(self.engine) as session:
-            return session.query(self._model).all()
+            return session.query(self._model).filter_by(**filters).all()
 
-    def get_by_id(self, object_id: str) -> BaseModel | None:
+    def get(self, **filters) -> BaseModel | None:
         with Session(self.engine) as session:
-            return session.query(self._model).filter_by(id=object_id).first()
-
-    def get(self, **kwargs) -> BaseModel | None:
-        with Session(self.engine) as session:
-            return session.query(self._model).filter_by(**kwargs).first()
-
-    def get_all_by_filter(self, **kwargs) -> list[BaseModel]:
-        with Session(self.engine) as session:
-            return session.query(self._model).filter_by(**kwargs).all()
+            return session.query(self._model).filter_by(**filters).first()
 
     def create(self, **kwargs) -> BaseModel:
         created_object = self._model(**kwargs)
@@ -56,24 +48,4 @@ class BaseRepository:
 
         with Session(self.engine) as session:
             session.execute(stmt)
-            session.commit()
-
-    def increment(self, object_id: str, column: str):
-        with Session(self.engine) as session:
-            (
-                session.
-                query(self._model).
-                filter_by(id=object_id).
-                update({column: getattr(self._model, column) + 1})
-            )
-            session.commit()
-
-    def decrement(self, object_id: str, column: str):
-        with Session(self.engine) as session:
-            (
-                session.
-                query(self._model).
-                filter_by(id=object_id).
-                update({column: getattr(self._model, column) - 1})
-            )
             session.commit()

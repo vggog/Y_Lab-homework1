@@ -46,7 +46,3 @@ class MenuModel(BaseModel):
         correlate_except(DishModel).
         scalar_subquery()
     )
-
-    @staticmethod
-    def to_dict(model):
-        return {c.name: getattr(model, c.name) for c in model.__table__.columns}

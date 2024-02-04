@@ -18,11 +18,18 @@ class Cache:
         )
 
     def set_value(self, key: str, data: BaseModel, schema) -> None:
+        """
+        Метод для сохранения данных в redis
+        key: ключ,
+        data: данные, которые сохраняются,
+        schema: pydantic-схема, с помощью которого данные преобразуются в json
+            и сохраняются в redis.
+        """
         data_for_saving = schema(**data.__dict__)
-
         self._redis_client().set(key, value=data_for_saving.model_dump_json())
 
     def get_value(self, key: str):
+        """Метод для получения данных."""
         data = self._redis_client().get(name=key)
         if data is None:
             return None
