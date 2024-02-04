@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 
 from src.core.repository import BaseRepository
+from src.dish.model import DishModel
+from src.submenu.model import SubmenuModel
 
 from .model import MenuModel
-from src.submenu.model import SubmenuModel
-from src.dish.model import DishModel
 
 
 class Repository(BaseRepository):

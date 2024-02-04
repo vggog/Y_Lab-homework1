@@ -48,3 +48,7 @@ repos:
     hooks:
     -   id: mypy
         exclude: 'alembic'
+        additional_dependencies:
+            [
+                types-redis,
+            ]

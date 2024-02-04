@@ -15,10 +15,10 @@ class MenuModel(BaseModel):
         default=lambda: str(uuid4()),
     )
 
-    submenus: Mapped[list["SubmenuModel"]] = relationship(
-        lazy="selectin",
-        back_populates="menu",
-        cascade="all, delete",
+    submenus: Mapped[list['SubmenuModel']] = relationship(
+        lazy='selectin',
+        back_populates='menu',
+        cascade='all, delete',
         passive_deletes=True,
     )
     submenus_count: Mapped[int] = column_property(

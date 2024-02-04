@@ -1,13 +1,12 @@
 from fastapi import Depends
 
+from src.core.cache import Cache
 from src.core.service import BaseService
+from src.submenu.repository import Repository as SubmenuRepository
 
 from .model import MenuModel
-from .schemas import MenuSchema
-from src.core.cache import Cache
-from src.submenu.repository import Repository as SubmenuRepository
 from .repository import Repository
-from .schemas import CreateMenuSchema, UpdateMenuSchema
+from .schemas import CreateMenuSchema, MenuSchema, UpdateMenuSchema
 
 
 class Service(BaseService):
