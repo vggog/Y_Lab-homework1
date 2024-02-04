@@ -12,7 +12,9 @@ dish_router = APIRouter(
 @dish_router.get(
     '/',
     response_model=list[DishSchema],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary='Список всех блюд',
+    description='Список всех блюда, принадлежащих определённому подменю.'
 )
 def get_all_dishes(
         service=Depends(Service),
@@ -24,6 +26,7 @@ def get_all_dishes(
     '/{dish_id}',
     response_model=DishSchema,
     status_code=status.HTTP_200_OK,
+    summary='Определённое блюдо',
 )
 def get_dish(
         dish_id: str,
@@ -43,6 +46,7 @@ def get_dish(
     '/',
     response_model=DishSchema,
     status_code=status.HTTP_201_CREATED,
+    summary='Создать блюдо',
 )
 def create_dish(
         menu_id: str,
@@ -61,6 +65,7 @@ def create_dish(
     '/{dish_id}',
     response_model=DishSchema,
     status_code=status.HTTP_200_OK,
+    summary='Обновить блюдо',
 )
 def update_dish(
         dish_id: str,
@@ -82,6 +87,7 @@ def update_dish(
 @dish_router.delete(
     '/{dish_id}',
     status_code=status.HTTP_200_OK,
+    summary='Удалить блюдо',
 )
 def delete_dish(
         menu_id: str,

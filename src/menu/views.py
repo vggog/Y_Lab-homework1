@@ -12,7 +12,8 @@ menus_router = APIRouter(
 @menus_router.get(
     '/',
     response_model=list[MenuSchema],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary='Список всех меню',
 )
 def get_all_menus(
         service=Depends(Service),
@@ -23,7 +24,8 @@ def get_all_menus(
 @menus_router.get(
     '/{menu_id}',
     response_model=MenuSchema,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary='Конкретное меню',
 )
 def get_menu_by_id(
         menu_id: str,
@@ -44,6 +46,7 @@ def get_menu_by_id(
     '/',
     response_model=MenuSchema,
     status_code=status.HTTP_201_CREATED,
+    summary='Создать меню',
 )
 def create_menu(
         created_menu: CreateMenuSchema,
@@ -56,6 +59,7 @@ def create_menu(
     '/{menu_id}',
     response_model=MenuSchema,
     status_code=status.HTTP_200_OK,
+    summary='Обновить меню',
 )
 def update_menu(
         menu_id: str,
@@ -74,7 +78,10 @@ def update_menu(
 
 @menus_router.delete(
     '/{menu_id}',
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary='Удалить меню',
+    description='При удаление меню, '
+                'также удаляются все подменю и блюда принадлежащие меню',
 )
 def delete_menu(
         menu_id: str,

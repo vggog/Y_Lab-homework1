@@ -12,7 +12,9 @@ submenus_router = APIRouter(
 @submenus_router.get(
     '/',
     response_model=list[SubmenuSchema],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary='Список всех подменю',
+    description='Список всех подменю, принадлежащих меню.'
 )
 def get_all_submenus(
         menu_id: str,
@@ -24,7 +26,8 @@ def get_all_submenus(
 @submenus_router.get(
     '/{submenu_id}',
     response_model=SubmenuSchema,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary='Определённое подменю',
 )
 def get_submenu(
         submenu_id: str,
@@ -45,6 +48,7 @@ def get_submenu(
     '/',
     response_model=SubmenuSchema,
     status_code=status.HTTP_201_CREATED,
+    summary='Создать подменю'
 )
 def create_submenu(
         menu_id: str,
@@ -61,6 +65,7 @@ def create_submenu(
     '/{submenu_id}',
     response_model=SubmenuSchema,
     status_code=status.HTTP_200_OK,
+    summary='Обновить подменю'
 )
 def update_submenu(
         submenu_id: str,
@@ -84,6 +89,9 @@ def update_submenu(
 @submenus_router.delete(
     '/{submenu_id}',
     status_code=status.HTTP_200_OK,
+    summary='Удалить подменю',
+    description='При удаление подменю, '
+                'так-же удаляются все блюда, принадлежащих меню.',
 )
 def delete_submenu(
         menu_id: str,
