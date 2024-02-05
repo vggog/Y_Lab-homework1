@@ -1,5 +1,7 @@
 from starlette import status
 
+from main import app
+from src.core.utils import reverse
 from src.menu.repository import Repository as MenuRepository
 from src.submenu.repository import Repository
 
@@ -22,7 +24,7 @@ def setup_module():
     :return:
     """
     response = client.post(
-        '/menus',
+        reverse(app, 'create_menu'),
         json=menu_data,
     )
     menu_data['id'] = response.json()['id']
@@ -34,7 +36,9 @@ def test_get_all_submenus():
     :return:
     """
     menu_id = menu_data['id']
-    response = client.get(f'/menus/{menu_id}/submenus')
+    response = client.get(
+        reverse(app, 'get_all_submenus', menu_id=menu_id),
+    )
 
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
@@ -51,7 +55,7 @@ def test_create_submenu(
     """
     menu_id = menu_data['id']
     response = client.post(
-        f'/menus/{menu_id}/submenus',
+        reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data
     )
 
@@ -80,7 +84,14 @@ def test_get_submenu():
     menu_id = menu_data['id']
     submenu_id = submenu_data['id']
 
-    response = client.get(f'/menus/{menu_id}/submenus/{submenu_id}')
+    response = client.get(
+        reverse(
+            app,
+            'get_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
+    )
 
     assert response.status_code == status.HTTP_200_OK
     response_data = response.json()
@@ -109,7 +120,12 @@ def test_update_title_of_submenu(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}',
+        reverse(
+            app,
+            'update_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json=updated_title,
     )
 
@@ -143,7 +159,12 @@ def test_update_description_of_submenu(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}',
+        reverse(
+            app,
+            'update_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json=updated_description,
     )
 
@@ -178,7 +199,12 @@ def test_update_submenu(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}',
+        reverse(
+            app,
+            'update_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json=updated_data,
     )
 
@@ -200,7 +226,12 @@ def test_number_dishes():
     submenu_id = submenu_data['id']
 
     response = client.post(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes',
+        reverse(
+            app,
+            'create_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json={
             'title': 'dish 1',
             'description': 'description of dish 1',
@@ -210,7 +241,12 @@ def test_number_dishes():
     assert response.status_code == status.HTTP_201_CREATED
 
     response = client.post(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes',
+        reverse(
+            app,
+            'create_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json={
             'title': 'dish 2',
             'description': 'description of dish 2',
@@ -219,7 +255,14 @@ def test_number_dishes():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response = client.get(f'/menus/{menu_id}/submenus/{submenu_id}')
+    response = client.get(
+        reverse(
+            app,
+            'get_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
+    )
 
     response_data = response.json()
 
@@ -237,7 +280,14 @@ def test_delete_submenu(
     menu_id = menu_data['id']
     submenu_id = submenu_data['id']
 
-    response = client.delete(f'/menus/{menu_id}/submenus/{submenu_id}')
+    response = client.delete(
+        reverse(
+            app,
+            'delete_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
+    )
 
     assert response.status_code == status.HTTP_200_OK
     submenu = repo.get_submenu(menu_id, submenu_id)

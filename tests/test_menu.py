@@ -1,5 +1,8 @@
 from starlette import status
 
+from main import app
+from src.core.utils import reverse
+
 from .conftest import client
 
 menu_data = {
@@ -13,7 +16,9 @@ def test_get_all_menus():
     Тест ручки для получения всех меню.
     :return:
     """
-    response = client.get('/menus')
+    response = client.get(
+        reverse(app, 'get_all_menus'),
+    )
     assert response.status_code == status.HTTP_200_OK
 
     response_data = response.json()
@@ -27,7 +32,7 @@ def test_add_menus():
     :return:
     """
     response = client.post(
-        '/menus',
+        reverse(app, 'create_menu'),
         json=menu_data,
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -56,7 +61,9 @@ def test_get_menu():
     :return:
     """
     menu_id = menu_data['id']
-    response = client.get(f'/menus/{ menu_id}')
+    response = client.get(
+        reverse(app, 'get_menu_by_id', menu_id=menu_id)
+    )
     assert response.status_code == status.HTTP_200_OK
 
     response_data = response.json()
@@ -80,7 +87,7 @@ def test_update_title_of_menu():
 
     menu_id = menu_data['id']
     response = client.patch(
-        f'/menus/{ menu_id}',
+        reverse(app, 'update_menu', menu_id=menu_id),
         json=updated_title,
     )
     assert response.status_code == status.HTTP_200_OK
@@ -104,7 +111,7 @@ def test_update_description_of_menu():
 
     menu_id = menu_data['id']
     response = client.patch(
-        f'/menus/{ menu_id}',
+        reverse(app, 'update_menu', menu_id=menu_id),
         json=updated_description,
     )
     assert response.status_code == status.HTTP_200_OK
@@ -129,7 +136,7 @@ def test_update_menu():
 
     menu_id = menu_data['id']
     response = client.patch(
-        f'/menus/{ menu_id}',
+        reverse(app, 'update_menu', menu_id=menu_id),
         json=updated_menu,
     )
 
@@ -153,7 +160,9 @@ def test_delete_menu():
     :return:
     """
     menu_id = menu_data['id']
-    response = client.delete(f'/menus/{ menu_id}')
+    response = client.delete(
+        reverse(app, 'delete_menu', menu_id=menu_id),
+    )
     assert response.status_code == status.HTTP_200_OK
 
     response = client.get(f'/menus/{ menu_id}')

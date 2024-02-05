@@ -1,5 +1,8 @@
 from starlette import status
 
+from main import app
+from src.core.utils import reverse
+
 from .conftest import client
 
 menu_data = {
@@ -18,7 +21,7 @@ def test_create_menu_for_counting_test():
     :return:
     """
     response = client.post(
-        '/menus',
+        reverse(app, 'create_menu'),
         json=menu_data,
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -44,7 +47,7 @@ def test_create_submenu_for_counting_test():
     menu_id = menu_data['id']
 
     response = client.post(
-        f'/menus/{menu_id}/submenus',
+        reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data,
     )
     assert response.status_code == status.HTTP_201_CREATED
@@ -60,7 +63,12 @@ def test_create_dish1_for_counting_test():
     submenu_id = submenu_data['id']
 
     response = client.post(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes',
+        reverse(
+            app,
+            'create_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json={
             'price': '12.45',
             'title': 'dish 1',
@@ -78,7 +86,12 @@ def test_create_dish2_for_counting_test():
     submenu_id = submenu_data['id']
 
     response = client.post(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes',
+        reverse(
+            app,
+            'create_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json={
             'price': '12.56',
             'title': 'dish 2',
@@ -94,7 +107,7 @@ def test_check_menu():
     """
     menu_id = menu_data['id']
     response = client.get(
-        f'/menus/{menu_id}'
+        reverse(app, 'get_menu_by_id', menu_id=menu_id)
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -117,7 +130,12 @@ def test_check_submenu():
     submenu_id = submenu_data['id']
 
     response = client.get(
-        f'/menus/{menu_id}/submenus/{submenu_id}'
+        reverse(
+            app,
+            'get_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -136,7 +154,14 @@ def test_delete_submenu():
     menu_id = menu_data['id']
     submenu_id = submenu_data['id']
 
-    response = client.delete(f'/menus/{menu_id}/submenus/{submenu_id}')
+    response = client.delete(
+        reverse(
+            app,
+            'delete_submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        )
+    )
 
     assert response.status_code == status.HTTP_200_OK
 
@@ -147,7 +172,11 @@ def get_all_submenus():
     """
     menu_id = menu_data['id']
     response = client.get(
-        f'/menus/{menu_id}/submenus'
+        reverse(
+            app,
+            'get_all_submenus',
+            menu_id=menu_id,
+        )
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -162,7 +191,12 @@ def test_get_all_dishes():
     submenu_id = submenu_data['id']
 
     response = client.get(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes'
+        reverse(
+            app,
+            'get_all_dishes',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -176,7 +210,7 @@ def test_check_menu_2():
     """
     menu_id = menu_data['id']
     response = client.get(
-        f'/menus/{menu_id}'
+        reverse(app, 'get_menu_by_id', menu_id=menu_id),
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -197,7 +231,7 @@ def test_delete_menu():
     """
     menu_id = menu_data['id']
     response = client.delete(
-        f'/menus/{menu_id}'
+        reverse(app, 'delete_menu', menu_id=menu_id),
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -208,7 +242,7 @@ def test_get_all_menus():
     :return:
     """
     response = client.get(
-        '/menus'
+        reverse(app, 'get_all_menus'),
     )
 
     assert response.status_code == status.HTTP_200_OK

@@ -1,5 +1,7 @@
 from starlette import status
 
+from main import app
+from src.core.utils import reverse
 from src.dish.repository import Repository
 from src.menu.repository import Repository as MenuRepository
 
@@ -28,13 +30,13 @@ def setup_module():
     :return:
     """
     response = client.post(
-        '/menus',
+        reverse(app, 'create_menu'),
         json=menu_data,
     )
     menu_id = response.json()['id']
 
     response = client.post(
-        f'/menus/{menu_id}/submenus',
+        reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data
     )
 
@@ -52,7 +54,14 @@ def test_get_all_dishes():
     menu_id = menu_data['id']
     submenu_id = submenu_data['id']
 
-    response = client.get(f'/menus/{menu_id}/submenus/{submenu_id}/dishes')
+    response = client.get(
+        reverse(
+            app,
+            'get_all_dishes',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == []
@@ -69,7 +78,12 @@ def test_create_dish(
     submenu_id = submenu_data['id']
 
     response = client.post(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes',
+        reverse(
+            app,
+            'create_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        ),
         json=dish_data,
     )
 
@@ -103,7 +117,13 @@ def test_get_dish():
     dish_id = dish_data['id']
 
     response = client.get(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}'
+        reverse(
+            app,
+            'get_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        ),
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -132,7 +152,13 @@ def test_update_title_of_dish(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+        reverse(
+            app,
+            'update_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        ),
         json=updated_title,
     )
 
@@ -173,7 +199,13 @@ def test_update_description_of_dish(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+        reverse(
+            app,
+            'update_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        ),
         json=updated_description,
     )
 
@@ -214,7 +246,13 @@ def test_update_price_of_dish(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+        reverse(
+            app,
+            'update_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        ),
         json=updated_price,
     )
 
@@ -257,7 +295,13 @@ def test_update_dish(
     }
 
     response = client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+        reverse(
+            app,
+            'update_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        ),
         json=updated_dish,
     )
 
@@ -290,7 +334,13 @@ def test_delete_dish(
     dish_id = dish_data['id']
 
     response = client.delete(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}'
+        reverse(
+            app,
+            'delete_dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        ),
     )
 
     assert response.status_code == status.HTTP_200_OK

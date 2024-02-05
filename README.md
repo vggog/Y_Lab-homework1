@@ -22,6 +22,9 @@ docker-compose -f docker-compose-test.yaml up --abort-on-container-exit --build
 Файл src/submenu/model.py
 Класс SubmenuModel, атрибут dishes_count
 
+## Ответ на 6-й вопрос
+Файл src/core/utils.py функция reverse()
+
 ## ТЗ домашеного задания
 Написать проект на FastAPI с использованием PostgreSQL в качестве БД.
 В проекте следует реализовать REST API по работе с меню ресторана, все CRUD операции.
