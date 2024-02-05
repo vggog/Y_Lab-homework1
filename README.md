@@ -2,25 +2,17 @@
 
 ## Запуск проекта
 Для запуска проекта необходим docker, docker-compose.
-1. Команда, чтобы собрать проект.
+Также необходимо создать и заполнить файл
+.env(в качестве примера - файл .env_example) в корневой директории проекта.
 ```commandline
-docker-compose build
-```
-2. Команда для запуска проекта.
-```commandline
-docker-compose up
+docker-compose up --build
 ```
 
 ## Тесты
 Для запуска тестов необходимо создать заполнить файл
 .env_test(в качестве примера - файл .env_test_example) в корневой директории проекта.
-1. Собрать докер с тестами
 ```commandline
-docker-compose -f docker-compose-test.yaml build
-```
-2. Запустить тесты
-```commandline
-docker-compose -f docker-compose-test.yaml up --abort-on-container-exit
+docker-compose -f docker-compose-test.yaml up --abort-on-container-exit --build
 ```
 
 ## Ответ на 3-й вопрос
