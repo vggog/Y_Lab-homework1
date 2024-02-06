@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from src.core.openapi_tags import Tags
+
 from .schemas import CreateMenuSchema, MenuSchema, UpdateMenuSchema
 from .service import Service
 
@@ -14,6 +16,7 @@ menus_router = APIRouter(
     response_model=list[MenuSchema],
     status_code=status.HTTP_200_OK,
     summary='Список всех меню',
+    tags=[Tags.menus],
 )
 def get_all_menus(
         service=Depends(Service),
@@ -26,6 +29,8 @@ def get_all_menus(
     response_model=MenuSchema,
     status_code=status.HTTP_200_OK,
     summary='Конкретное меню',
+    tags=[Tags.menus],
+    responses={404: {'detail': {'menu not found'}}},
 )
 def get_menu_by_id(
         menu_id: str,
@@ -47,6 +52,7 @@ def get_menu_by_id(
     response_model=MenuSchema,
     status_code=status.HTTP_201_CREATED,
     summary='Создать меню',
+    tags=[Tags.menus],
 )
 def create_menu(
         created_menu: CreateMenuSchema,
@@ -60,6 +66,8 @@ def create_menu(
     response_model=MenuSchema,
     status_code=status.HTTP_200_OK,
     summary='Обновить меню',
+    tags=[Tags.menus],
+    responses={404: {'detail': {'menu not found'}}},
 )
 def update_menu(
         menu_id: str,
@@ -82,6 +90,7 @@ def update_menu(
     summary='Удалить меню',
     description='При удаление меню, '
                 'также удаляются все подменю и блюда принадлежащие меню',
+    tags=[Tags.menus],
 )
 def delete_menu(
         menu_id: str,

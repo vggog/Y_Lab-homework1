@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from src.core.openapi_tags import Tags
+
 from .schemas import CreateDishSchema, DishSchema, UpdateDishSchema
 from .service import Service
 
@@ -14,7 +16,8 @@ dish_router = APIRouter(
     response_model=list[DishSchema],
     status_code=status.HTTP_200_OK,
     summary='Список всех блюд',
-    description='Список всех блюда, принадлежащих определённому подменю.'
+    description='Список всех блюда, принадлежащих определённому подменю.',
+    tags=[Tags.dishes],
 )
 def get_all_dishes(
         submenu_id: str,
@@ -28,6 +31,8 @@ def get_all_dishes(
     response_model=DishSchema,
     status_code=status.HTTP_200_OK,
     summary='Определённое блюдо',
+    tags=[Tags.dishes],
+    responses={404: {'detail': {'dish not found'}}},
 )
 def get_dish(
         dish_id: str,
@@ -48,6 +53,7 @@ def get_dish(
     response_model=DishSchema,
     status_code=status.HTTP_201_CREATED,
     summary='Создать блюдо',
+    tags=[Tags.dishes],
 )
 def create_dish(
         menu_id: str,
@@ -67,6 +73,8 @@ def create_dish(
     response_model=DishSchema,
     status_code=status.HTTP_200_OK,
     summary='Обновить блюдо',
+    tags=[Tags.dishes],
+    responses={404: {'detail': {'dish not found'}}},
 )
 def update_dish(
         dish_id: str,
@@ -89,6 +97,7 @@ def update_dish(
     '/{dish_id}',
     status_code=status.HTTP_200_OK,
     summary='Удалить блюдо',
+    tags=[Tags.dishes],
 )
 def delete_dish(
         menu_id: str,

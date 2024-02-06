@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from src.core.openapi_tags import Tags
+
 from .schemas import CreateSubmenuSchema, SubmenuSchema, UpdateSubmenuSchema
 from .service import Service
 
@@ -14,7 +16,8 @@ submenus_router = APIRouter(
     response_model=list[SubmenuSchema],
     status_code=status.HTTP_200_OK,
     summary='Список всех подменю',
-    description='Список всех подменю, принадлежащих меню.'
+    description='Список всех подменю, принадлежащих меню.',
+    tags=[Tags.submenus],
 )
 def get_all_submenus(
         menu_id: str,
@@ -28,6 +31,8 @@ def get_all_submenus(
     response_model=SubmenuSchema,
     status_code=status.HTTP_200_OK,
     summary='Определённое подменю',
+    tags=[Tags.submenus],
+    responses={404: {'detail': {'submenu not found'}}},
 )
 def get_submenu(
         submenu_id: str,
@@ -47,7 +52,8 @@ def get_submenu(
     '/',
     response_model=SubmenuSchema,
     status_code=status.HTTP_201_CREATED,
-    summary='Создать подменю'
+    summary='Создать подменю',
+    tags=[Tags.submenus],
 )
 def create_submenu(
         menu_id: str,
@@ -64,7 +70,9 @@ def create_submenu(
     '/{submenu_id}',
     response_model=SubmenuSchema,
     status_code=status.HTTP_200_OK,
-    summary='Обновить подменю'
+    summary='Обновить подменю',
+    tags=[Tags.submenus],
+    responses={404: {'detail': {'submenu not found'}}},
 )
 def update_submenu(
         submenu_id: str,
@@ -91,6 +99,7 @@ def update_submenu(
     summary='Удалить подменю',
     description='При удаление подменю, '
                 'так-же удаляются все блюда, принадлежащих меню.',
+    tags=[Tags.submenus],
 )
 def delete_submenu(
         menu_id: str,
