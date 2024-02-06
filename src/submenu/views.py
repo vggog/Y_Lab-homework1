@@ -19,7 +19,7 @@ submenus_router = APIRouter(
 def get_all_submenus(
         menu_id: str,
         service=Depends(Service),
-):
+) -> list[SubmenuSchema]:
     return service.get_all_submenu(menu_id)
 
 
@@ -31,10 +31,9 @@ def get_all_submenus(
 )
 def get_submenu(
         submenu_id: str,
-        menu_id: str,
         service=Depends(Service),
-):
-    submenu = service.get_submenu(submenu_id=submenu_id, menu_id=menu_id)
+) -> SubmenuSchema:
+    submenu = service.get_submenu(submenu_id=submenu_id)
     if submenu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -54,7 +53,7 @@ def create_submenu(
         menu_id: str,
         created_submenu: CreateSubmenuSchema,
         service=Depends(Service),
-):
+) -> SubmenuSchema:
     return service.create_submenu(
         menu_id=menu_id,
         created_submenu=created_submenu
@@ -71,7 +70,7 @@ def update_submenu(
         submenu_id: str,
         updated_submenu: UpdateSubmenuSchema,
         service=Depends(Service),
-):
+) -> SubmenuSchema:
     updated_submenu = service.update_submenu(
         submenu_id=submenu_id,
         updated_data=updated_submenu

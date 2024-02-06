@@ -17,19 +17,19 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
-    def get_all_submenu(self, menu_id: str):
-        return self.repository.get_all_submenus_of_menu(menu_id)
+    def get_all_submenu(self, menu_id: str) -> list[SubmenuModel]:
+        return self.repository.get_all(menu_id=menu_id)
 
-    def get_submenu(self, submenu_id: str, menu_id: str):
+    def get_submenu(
+            self,
+            submenu_id: str
+    ) -> SubmenuModel | dict[str, str] | None:
         """Сервис для получения подменю."""
-        submenu_from_cache = self.cache.get_value(submenu_id)
+        submenu_from_cache: dict[str, str] = self.cache.get_value(submenu_id)
         if submenu_from_cache is not None:
             return submenu_from_cache
 
-        submenu = self.repository.get_submenu(
-            submenu_id=submenu_id,
-            menu_id=menu_id,
-        )
+        submenu: SubmenuModel = self.repository.get(id=submenu_id)
         if submenu is None:
             return None
 
@@ -50,7 +50,7 @@ class Service(BaseService):
         Метод для создания меню.
         Созданное меню добавляется в кэш.
         """
-        submenu = self.repository.create(
+        submenu: SubmenuModel = self.repository.create(
             menu_id=menu_id,
             **created_submenu.model_dump(),
         )
@@ -67,24 +67,28 @@ class Service(BaseService):
             self,
             submenu_id: str,
             updated_data: UpdateSubmenuSchema,
-    ) -> SubmenuModel:
+    ) -> SubmenuModel | None:
         """
         Сервис для обновления подменю.
         Данные о подменю обновляются в кэше.
         """
-        updated_data_dict = self.delete_non_value_key(
+        updated_data_dict: dict[str, str] = self.delete_non_value_key(
             updated_data.model_dump()
         )
 
         self.cache.delete_value(submenu_id)
 
-        submenu = self.repository.update(submenu_id, **updated_data_dict)
-
-        self.cache.set_value(
-            key=submenu.id,
-            data=submenu,
-            schema=SubmenuSchema,
+        submenu: SubmenuModel | None = self.repository.update(
+            submenu_id,
+            **updated_data_dict
         )
+
+        if submenu is not None:
+            self.cache.set_value(
+                key=submenu.id,
+                data=submenu,
+                schema=SubmenuSchema,
+            )
         return submenu
 
     def delete_submenu(self, menu_id: str, submenu_id: str):

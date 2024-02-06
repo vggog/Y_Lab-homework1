@@ -28,7 +28,10 @@ class Cache:
         data_for_saving = schema(**data.__dict__)
         self._redis_client().set(key, value=data_for_saving.model_dump_json())
 
-    def get_value(self, key: str):
+    def get_value(
+            self,
+            key: str
+    ) -> list[dict[str, str]] | dict[str, str] | None:
         """Метод для получения данных."""
         data = self._redis_client().get(name=key)
         if data is None:

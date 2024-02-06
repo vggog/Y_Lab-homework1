@@ -2,22 +2,23 @@ from starlette import status
 
 from main import app
 from src.core.utils import reverse
+from src.dish.model import DishModel
 from src.dish.repository import Repository
 from src.menu.repository import Repository as MenuRepository
 
 from .conftest import client
 
-menu_data = {
+menu_data: dict[str, str] = {
     'title': 'menu',
     'description': 'description of menu',
 }
 
-submenu_data = {
+submenu_data: dict[str, str] = {
     'title': 'submenu',
     'description': 'description of submenu',
 }
 
-dish_data = {
+dish_data: dict[str, str] = {
     'price': '12.50',
     'title': 'submenu',
     'description': 'description of submenu',
@@ -33,14 +34,14 @@ def setup_module():
         reverse(app, 'create_menu'),
         json=menu_data,
     )
-    menu_id = response.json()['id']
+    menu_id: str = response.json()['id']
 
     response = client.post(
         reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data
     )
 
-    submenu_id = response.json()['id']
+    submenu_id: str = response.json()['id']
 
     menu_data['id'] = menu_id
     submenu_data['id'] = submenu_id
@@ -51,8 +52,8 @@ def test_get_all_dishes():
     Тест ручки для получения всех блюд определённого сабменю
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.get(
         reverse(
@@ -74,8 +75,8 @@ def test_create_dish(
     Тест для создания блюда.
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.post(
         reverse(
@@ -89,15 +90,15 @@ def test_create_dish(
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['title'] == dish_data['title']
     assert response_data['description'] == dish_data['description']
     assert response_data['price'] == dish_data['price']
 
-    dish_id = response_data['id']
+    dish_id: str = response_data['id']
     dish_data['id'] = dish_id
-    dish = repo.get_by_id(dish_id)
+    dish: DishModel | None = repo.get_by_id(dish_id)
 
     if dish is None:
         assert dish
@@ -112,9 +113,9 @@ def test_get_dish():
     Тест ручки для получения определённого блюда.
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
-    dish_id = dish_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
+    dish_id: str = dish_data['id']
 
     response = client.get(
         reverse(
@@ -127,7 +128,7 @@ def test_get_dish():
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['id'] == dish_data['id']
     assert response_data['title'] == dish_data['title']
@@ -143,11 +144,11 @@ def test_update_title_of_dish(
     Обновление названия(title).
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
-    dish_id = dish_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
+    dish_id: str = dish_data['id']
 
-    updated_title = {
+    updated_title: dict[str, str] = {
         'title': 'updated title of dish'
     }
 
@@ -163,14 +164,14 @@ def test_update_title_of_dish(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['id'] == dish_data['id']
     assert response_data['title'] == updated_title['title']
     assert response_data['description'] == dish_data['description']
     assert response_data['price'] == dish_data['price']
 
-    dish = repo.get_by_id(dish_id)
+    dish: DishModel | None = repo.get_by_id(dish_id)
 
     if dish is None:
         assert dish
@@ -190,11 +191,11 @@ def test_update_description_of_dish(
     Обновление описания(description).
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
-    dish_id = dish_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
+    dish_id: str = dish_data['id']
 
-    updated_description = {
+    updated_description: dict[str, str] = {
         'description': 'updated description of dish'
     }
 
@@ -210,14 +211,14 @@ def test_update_description_of_dish(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['id'] == dish_data['id']
     assert response_data['title'] == dish_data['title']
     assert response_data['description'] == updated_description['description']
     assert response_data['price'] == dish_data['price']
 
-    dish = repo.get_by_id(dish_id)
+    dish: DishModel | None = repo.get_by_id(dish_id)
 
     if dish is None:
         assert dish
@@ -237,11 +238,11 @@ def test_update_price_of_dish(
     Обновление цены(price).
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
-    dish_id = dish_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
+    dish_id: str = dish_data['id']
 
-    updated_price = {
+    updated_price: dict[str, str] = {
         'price': '15.30'
     }
 
@@ -264,7 +265,7 @@ def test_update_price_of_dish(
     assert response_data['description'] == dish_data['description']
     assert response_data['price'] == updated_price['price']
 
-    dish = repo.get_by_id(dish_id)
+    dish: DishModel | None = repo.get_by_id(dish_id)
 
     if dish is None:
         assert dish
@@ -284,11 +285,11 @@ def test_update_dish(
     Обновление всех полей: название(title), описания(description), цена(price).
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
-    dish_id = dish_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
+    dish_id: str = dish_data['id']
 
-    updated_dish = {
+    updated_dish: dict[str, str] = {
         'title': 'twice updated title of dish',
         'description': 'twice updated description of dish',
         'price': '98.30',
@@ -306,14 +307,14 @@ def test_update_dish(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['id'] == dish_data['id']
     assert response_data['title'] == updated_dish['title']
     assert response_data['description'] == updated_dish['description']
     assert response_data['price'] == updated_dish['price']
 
-    dish = repo.get_by_id(dish_id)
+    dish: DishModel | None = repo.get_by_id(dish_id)
 
     if dish is None:
         assert dish
@@ -329,9 +330,9 @@ def test_delete_dish(
     """
     Тест ручки для удаления блюда.
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
-    dish_id = dish_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
+    dish_id: str = dish_data['id']
 
     response = client.delete(
         reverse(
@@ -344,7 +345,7 @@ def test_delete_dish(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    submenu = repo.get_by_id(dish_id)
+    submenu: DishModel | None = repo.get_by_id(dish_id)
 
     assert not submenu
 
@@ -354,7 +355,7 @@ def teardown_module():
     Удаление созданных меню и сабменю.
     :return:
     """
-    repo = MenuRepository()
-    menu_id = menu_data['id']
+    repo: MenuRepository = MenuRepository()
+    menu_id: str = menu_data['id']
 
     repo.delete(menu_id)

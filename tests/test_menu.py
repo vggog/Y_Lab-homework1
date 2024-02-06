@@ -5,7 +5,7 @@ from src.core.utils import reverse
 
 from .conftest import client
 
-menu_data = {
+menu_data: dict[str, str] = {
     'title': 'menu 1',
     'description': 'description of menu 1',
 }
@@ -21,7 +21,7 @@ def test_get_all_menus():
     )
     assert response.status_code == status.HTTP_200_OK
 
-    response_data = response.json()
+    response_data: list[dict[str, str]] = response.json()
     assert isinstance(response_data, list)
     assert len(response_data) == 0
 
@@ -37,7 +37,7 @@ def test_add_menus():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
     assert response_data.get('id')
     assert response_data.get('title')
     assert response_data.get('description')
@@ -48,7 +48,7 @@ def test_add_menus():
     response = client.get('/menus')
     assert response.status_code == status.HTTP_200_OK
 
-    get_all_response_data = response.json()
+    get_all_response_data: list[dict[str, str]] = response.json()
     assert isinstance(get_all_response_data, list)
     assert len(get_all_response_data) == 1
 
@@ -60,13 +60,13 @@ def test_get_menu():
     Тест ручки для получения конкретного меню.
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.get(
         reverse(app, 'get_menu_by_id', menu_id=menu_id)
     )
     assert response.status_code == status.HTTP_200_OK
 
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
     assert response_data.get('id')
     assert response_data.get('title')
     assert response_data.get('description')
@@ -81,17 +81,17 @@ def test_update_title_of_menu():
     Обновления названия(title).
     :return:
     """
-    updated_title = {
+    updated_title: dict[str, str] = {
         'title': 'update menu 1'
     }
 
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.patch(
         reverse(app, 'update_menu', menu_id=menu_id),
         json=updated_title,
     )
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['title'] == updated_title['title']
     assert response_data['description'] == menu_data['description']
@@ -109,13 +109,13 @@ def test_update_description_of_menu():
         'description': 'updated description of menu 1'
     }
 
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.patch(
         reverse(app, 'update_menu', menu_id=menu_id),
         json=updated_description,
     )
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert response_data['title'] == menu_data['title']
     assert response_data['description'] == updated_description['description']
@@ -134,7 +134,7 @@ def test_update_menu():
         'description': 'twice updated description of menu 1',
     }
 
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.patch(
         reverse(app, 'update_menu', menu_id=menu_id),
         json=updated_menu,
@@ -142,7 +142,7 @@ def test_update_menu():
 
     assert response.status_code == status.HTTP_200_OK
 
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
     assert response_data.get('id')
     assert response_data.get('title')
     assert response_data.get('description')
@@ -159,7 +159,7 @@ def test_delete_menu():
     Тест ручки для удаления меню.
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.delete(
         reverse(app, 'delete_menu', menu_id=menu_id),
     )
@@ -170,6 +170,6 @@ def test_delete_menu():
 
     response = client.get('/menus')
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
     assert isinstance(response_data, list)
     assert len(response_data) == 0

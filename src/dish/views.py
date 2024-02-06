@@ -18,7 +18,7 @@ dish_router = APIRouter(
 )
 def get_all_dishes(
         service=Depends(Service),
-):
+) -> list[DishSchema]:
     return service.get_all_dishes()
 
 
@@ -31,7 +31,7 @@ def get_all_dishes(
 def get_dish(
         dish_id: str,
         service=Depends(Service),
-):
+) -> DishSchema:
     dish = service.get_dish(dish_id)
     if dish is None:
         raise HTTPException(
@@ -53,7 +53,7 @@ def create_dish(
         submenu_id: str,
         created_dish: CreateDishSchema,
         service=Depends(Service),
-):
+) -> DishSchema:
     return service.create_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
@@ -71,7 +71,7 @@ def update_dish(
         dish_id: str,
         updated_dish: UpdateDishSchema,
         service=Depends(Service),
-):
+) -> DishSchema:
     dish = service.update_dish(
         dish_id=dish_id, updated_data=updated_dish
     )

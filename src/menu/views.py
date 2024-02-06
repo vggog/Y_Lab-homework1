@@ -17,7 +17,7 @@ menus_router = APIRouter(
 )
 def get_all_menus(
         service=Depends(Service),
-):
+) -> list[MenuSchema]:
     return service.get_all_menus()
 
 
@@ -30,7 +30,7 @@ def get_all_menus(
 def get_menu_by_id(
         menu_id: str,
         service=Depends(Service),
-):
+) -> MenuSchema:
     menu = service.get_menu(menu_id)
 
     if menu is None:
@@ -51,7 +51,7 @@ def get_menu_by_id(
 def create_menu(
         created_menu: CreateMenuSchema,
         service=Depends(Service),
-):
+) -> MenuSchema:
     return service.create_menu(created_menu)
 
 
@@ -65,7 +65,7 @@ def update_menu(
         menu_id: str,
         update_menu_data: UpdateMenuSchema,
         service=Depends(Service),
-):
+) -> MenuSchema:
     updated_menu = service.update_menu(menu_id, update_menu_data)
     if updated_menu is None:
         raise HTTPException(

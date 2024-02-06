@@ -26,7 +26,7 @@ def test_create_menu_for_counting_test():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    created_menu = response.json()
+    created_menu: dict[str, str] = response.json()
 
     assert 'id' in created_menu.keys()
     assert 'title' in created_menu.keys()
@@ -44,7 +44,7 @@ def test_create_submenu_for_counting_test():
     """
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
 
     response = client.post(
         reverse(app, 'create_submenu', menu_id=menu_id),
@@ -59,8 +59,8 @@ def test_create_dish1_for_counting_test():
     """
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.post(
         reverse(
@@ -82,8 +82,8 @@ def test_create_dish2_for_counting_test():
     """
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.post(
         reverse(
@@ -105,14 +105,14 @@ def test_check_menu():
     """
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.get(
         reverse(app, 'get_menu_by_id', menu_id=menu_id)
     )
 
     assert response.status_code == status.HTTP_200_OK
 
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert 'id' in response_data.keys()
     assert 'submenus_count' in response_data.keys()
@@ -126,8 +126,8 @@ def test_check_submenu():
     """
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.get(
         reverse(
@@ -139,7 +139,7 @@ def test_check_submenu():
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert 'id' in response_data.keys()
     assert 'dishes_count' in response_data.keys()
@@ -151,8 +151,8 @@ def test_delete_submenu():
     """
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.delete(
         reverse(
@@ -170,7 +170,7 @@ def get_all_submenus():
     """
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.get(
         reverse(
             app,
@@ -187,8 +187,8 @@ def test_get_all_dishes():
     """
     :return:
     """
-    menu_id = menu_data['id']
-    submenu_id = submenu_data['id']
+    menu_id: str = menu_data['id']
+    submenu_id: str = submenu_data['id']
 
     response = client.get(
         reverse(
@@ -200,7 +200,7 @@ def test_get_all_dishes():
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: list[dict[str, str]] = response.json()
     assert len(response_data) == 0
 
 
@@ -208,14 +208,14 @@ def test_check_menu_2():
     """
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.get(
         reverse(app, 'get_menu_by_id', menu_id=menu_id),
     )
 
     assert response.status_code == status.HTTP_200_OK
 
-    response_data = response.json()
+    response_data: dict[str, str] = response.json()
 
     assert 'id' in response_data.keys()
     assert 'submenus_count' in response_data.keys()
@@ -229,7 +229,7 @@ def test_delete_menu():
     """
     :return:
     """
-    menu_id = menu_data['id']
+    menu_id: str = menu_data['id']
     response = client.delete(
         reverse(app, 'delete_menu', menu_id=menu_id),
     )
@@ -246,5 +246,5 @@ def test_get_all_menus():
     )
 
     assert response.status_code == status.HTTP_200_OK
-    response_data = response.json()
+    response_data: list[dict[str, str]] = response.json()
     assert len(response_data) == 0

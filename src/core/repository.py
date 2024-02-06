@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, delete, update
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.dml import Delete, ReturningUpdate
 
 from .config import db_config
 from .model import BaseModel
@@ -18,7 +19,7 @@ class BaseRepository:
             return session.query(self._model).filter_by(**filters).first()
 
     def create(self, **kwargs) -> BaseModel:
-        created_object = self._model(**kwargs)
+        created_object: BaseModel = self._model(**kwargs)
 
         with Session(self.engine) as session:
             session.add(created_object)
@@ -28,7 +29,7 @@ class BaseRepository:
         return created_object
 
     def update(self, object_id: str, **kwargs) -> BaseModel | None:
-        stmt = (
+        stmt: ReturningUpdate = (
             update(self._model).
             where(self._model.id == object_id).
             values(**kwargs).returning()
@@ -41,7 +42,7 @@ class BaseRepository:
             return session.query(self._model).filter_by(id=object_id).first()
 
     def delete(self, object_id: str):
-        stmt = (
+        stmt: Delete = (
             delete(self._model).
             where(self._model.id == object_id)
         )
