@@ -17,8 +17,26 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
-    def get_all_submenu(self, menu_id: str) -> list[SubmenuModel]:
-        return self.repository.get_all(menu_id=menu_id)
+    def get_all_submenu(
+            self,
+            menu_id: str
+    ) -> list[SubmenuModel] | list[dict[str, str]]:
+        key = self.get_key_for_all_datas('submenus', menu_id)
+        all_submenus_from_cache = self.cache.get_value(key)
+        if all_submenus_from_cache is not None:
+            return all_submenus_from_cache
+
+        all_submenus: list[SubmenuModel] = self.repository.get_all(
+            menu_id=menu_id
+        )
+
+        self.cache.set_list_of_values(
+            key=key,
+            datas=all_submenus,
+            schema=SubmenuSchema,
+        )
+
+        return all_submenus
 
     def get_submenu(
             self,
@@ -60,6 +78,12 @@ class Service(BaseService):
             schema=SubmenuSchema,
         )
         self.cache.delete_value(menu_id)
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('submenus', menu_id)
+        )
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('menus')
+        )
 
         return submenu
 
@@ -95,5 +119,11 @@ class Service(BaseService):
         """Сервис для удаления подменю."""
         self.cache.delete_value(menu_id)
         self.cache.delete_value(submenu_id)
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('submenus', menu_id)
+        )
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('menus')
+        )
 
         self.repository.delete(submenu_id)

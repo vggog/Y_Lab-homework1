@@ -22,8 +22,22 @@ class Service(BaseService):
         self.cache = cache
         self.submenu_repository = submenu_repository
 
-    def get_all_menus(self) -> list[MenuModel]:
-        return self.repository.get_all()
+    def get_all_menus(self) -> list[MenuModel] | list[dict[str, str]]:
+        key: str = self.get_key_for_all_datas('menus')
+        all_menus_from_cache: list[dict[str, str]] = self.cache.get_value(key)
+
+        if all_menus_from_cache is not None:
+            return all_menus_from_cache
+
+        all_menus: list[MenuModel] = self.repository.get_all()
+
+        self.cache.set_list_of_values(
+            key=key,
+            datas=all_menus,
+            schema=MenuSchema,
+        )
+
+        return all_menus
 
     def get_menu(self, menu_id: str) -> MenuModel | dict[str, str] | None:
         """
@@ -50,6 +64,8 @@ class Service(BaseService):
         """
         menu: MenuModel = self.repository.create(**created_menu.model_dump())
         self.cache.set_value(menu.id, menu, MenuSchema)
+
+        self.cache.delete_value(self.get_key_for_all_datas('menus'))
 
         return menu
 
@@ -91,3 +107,4 @@ class Service(BaseService):
             self.cache.delete_value(dish.id)
 
         self.repository.delete(menu_id)
+        self.cache.delete_value(self.get_key_for_all_datas('menus'))

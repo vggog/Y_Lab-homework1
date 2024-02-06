@@ -8,3 +8,28 @@ class BaseService:
         }
 
         return updated_dict
+
+    @staticmethod
+    def get_key_for_all_datas(category: str, id_: str = '') -> str:
+        """
+
+        :param category: Категория сущносности для списка.
+                Может быть только menus, submenus, diches.
+        :param id_: id родительской сущности.
+                Для submenu - menu_id
+                Для dish - submenu_id
+        :return ключ для redis:
+        """
+        if category not in ('menus', 'submenus', 'dishes'):
+            raise TypeError(
+                'Категория для создания ключа должен быть '
+                'menus, submenus, diches'
+            )
+
+        key = ''
+        if id_:
+            key += id_ + '_'
+
+        key += f'all_{category}'
+
+        return key

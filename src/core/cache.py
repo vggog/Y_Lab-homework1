@@ -28,6 +28,21 @@ class Cache:
         data_for_saving = schema(**data.__dict__)
         self._redis_client().set(key, value=data_for_saving.model_dump_json())
 
+    def set_list_of_values(self, key: str, datas: list[BaseModel], schema) -> None:
+        """
+        Метод для сохранения списка данных.
+        :param key: ключ
+        :param datas: список данных
+        :param schema: pydantic-схема, с помощью которого каждый элемент списка
+                        преобразуются в json.
+        :return:
+        """
+        saving_datas = []
+        for data in datas:
+            saving_datas.append(schema(**data.__dict__).model_dump())
+
+        self._redis_client().set(key, value=json.dumps(saving_datas))
+
     def get_value(
             self,
             key: str

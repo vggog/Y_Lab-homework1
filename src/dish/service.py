@@ -17,8 +17,26 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
-    def get_all_dishes(self, submenu_id: str) -> list[DishSchema]:
-        return self.repository.get_all(submenu_id=submenu_id)
+    def get_all_dishes(
+            self,
+            submenu_id: str
+    ) -> list[DishSchema] | dict[str, str]:
+        key: str = self.get_key_for_all_datas('dishes', submenu_id)
+        all_dishes_from_cache: dict[str, str] | None = self.cache.get_value(
+            key=key
+        )
+        if all_dishes_from_cache is not None:
+            return all_dishes_from_cache
+
+        all_dishes = self.repository.get_all(submenu_id=submenu_id)
+
+        self.cache.set_list_of_values(
+            key=key,
+            datas=all_dishes,
+            schema=DishSchema,
+        )
+
+        return all_dishes
 
     def get_dish(self, dish_id: str) -> DishModel | dict[str, str] | None:
         """
@@ -66,6 +84,15 @@ class Service(BaseService):
 
         self.cache.delete_value(menu_id)
         self.cache.delete_value(submenu_id)
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('dishes', submenu_id)
+        )
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('submenus', menu_id)
+        )
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('menus')
+        )
 
         return dish
 
@@ -108,5 +135,14 @@ class Service(BaseService):
         self.cache.delete_value(menu_id)
         self.cache.delete_value(submenu_id)
         self.cache.delete_value(dish_id)
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('dishes', submenu_id)
+        )
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('submenus', menu_id)
+        )
+        self.cache.delete_value(
+            key=self.get_key_for_all_datas('menus')
+        )
 
         self.repository.delete(dish_id)
