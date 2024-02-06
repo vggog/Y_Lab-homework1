@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    image: postgres:16.0
+    image: postgres:15.1
     volumes:
       - ylab_db:/var/lib/postgresql/data
     env_file:
@@ -12,6 +12,11 @@ services:
     networks:
       - ylab-network
     container_name: ylab-db
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   back:
     build: .
@@ -23,7 +28,10 @@ services:
     networks:
       - ylab-network
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     container_name: ylab-back
     restart: always
 
@@ -35,8 +43,9 @@ services:
       - redis_storage:/data
     networks:
       - ylab-network
-
     container_name: ylab-redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
 
 networks:
