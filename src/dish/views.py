@@ -17,9 +17,10 @@ dish_router = APIRouter(
     description='Список всех блюда, принадлежащих определённому подменю.'
 )
 def get_all_dishes(
+        submenu_id: str,
         service=Depends(Service),
 ) -> list[DishSchema]:
-    return service.get_all_dishes()
+    return service.get_all_dishes(submenu_id=submenu_id)
 
 
 @dish_router.get(

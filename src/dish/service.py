@@ -17,8 +17,8 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
-    def get_all_dishes(self) -> list[DishSchema]:
-        return self.repository.get_all()
+    def get_all_dishes(self, submenu_id: str) -> list[DishSchema]:
+        return self.repository.get_all(submenu_id=submenu_id)
 
     def get_dish(self, dish_id: str) -> DishModel | dict[str, str] | None:
         """
