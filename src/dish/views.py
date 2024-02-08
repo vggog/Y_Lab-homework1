@@ -19,11 +19,11 @@ dish_router = APIRouter(
     description='Список всех блюда, принадлежащих определённому подменю.',
     tags=[Tags.dishes],
 )
-def get_all_dishes(
+async def get_all_dishes(
         submenu_id: str,
         service=Depends(Service),
 ) -> list[DishSchema]:
-    return service.get_all_dishes(submenu_id=submenu_id)
+    return await service.get_all_dishes(submenu_id=submenu_id)
 
 
 @dish_router.get(
@@ -34,11 +34,11 @@ def get_all_dishes(
     tags=[Tags.dishes],
     responses={404: {'detail': {'dish not found'}}},
 )
-def get_dish(
+async def get_dish(
         dish_id: str,
         service=Depends(Service),
 ) -> DishSchema:
-    dish = service.get_dish(dish_id)
+    dish = await service.get_dish(dish_id)
     if dish is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -55,13 +55,13 @@ def get_dish(
     summary='Создать блюдо',
     tags=[Tags.dishes],
 )
-def create_dish(
+async def create_dish(
         menu_id: str,
         submenu_id: str,
         created_dish: CreateDishSchema,
         service=Depends(Service),
 ) -> DishSchema:
-    return service.create_dish(
+    return await service.create_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
         created_dish=created_dish,
@@ -76,12 +76,12 @@ def create_dish(
     tags=[Tags.dishes],
     responses={404: {'detail': {'dish not found'}}},
 )
-def update_dish(
+async def update_dish(
         dish_id: str,
         updated_dish: UpdateDishSchema,
         service=Depends(Service),
 ) -> DishSchema:
-    dish = service.update_dish(
+    dish = await service.update_dish(
         dish_id=dish_id, updated_data=updated_dish
     )
     if dish is None:
@@ -99,13 +99,13 @@ def update_dish(
     summary='Удалить блюдо',
     tags=[Tags.dishes],
 )
-def delete_dish(
+async def delete_dish(
         menu_id: str,
         submenu_id: str,
         dish_id: str,
         service=Depends(Service),
 ):
-    service.delete_dish(
+    await service.delete_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
         dish_id=dish_id,

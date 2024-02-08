@@ -19,11 +19,11 @@ submenus_router = APIRouter(
     description='Список всех подменю, принадлежащих меню.',
     tags=[Tags.submenus],
 )
-def get_all_submenus(
+async def get_all_submenus(
         menu_id: str,
         service=Depends(Service),
 ) -> list[SubmenuSchema]:
-    return service.get_all_submenu(menu_id)
+    return await service.get_all_submenu(menu_id)
 
 
 @submenus_router.get(
@@ -34,11 +34,11 @@ def get_all_submenus(
     tags=[Tags.submenus],
     responses={404: {'detail': {'submenu not found'}}},
 )
-def get_submenu(
+async def get_submenu(
         submenu_id: str,
         service=Depends(Service),
 ) -> SubmenuSchema:
-    submenu = service.get_submenu(submenu_id=submenu_id)
+    submenu = await service.get_submenu(submenu_id=submenu_id)
     if submenu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -55,12 +55,12 @@ def get_submenu(
     summary='Создать подменю',
     tags=[Tags.submenus],
 )
-def create_submenu(
+async def create_submenu(
         menu_id: str,
         created_submenu: CreateSubmenuSchema,
         service=Depends(Service),
 ) -> SubmenuSchema:
-    return service.create_submenu(
+    return await service.create_submenu(
         menu_id=menu_id,
         created_submenu=created_submenu
     )
@@ -74,12 +74,12 @@ def create_submenu(
     tags=[Tags.submenus],
     responses={404: {'detail': {'submenu not found'}}},
 )
-def update_submenu(
+async def update_submenu(
         submenu_id: str,
         updated_submenu: UpdateSubmenuSchema,
         service=Depends(Service),
-) -> SubmenuSchema:
-    updated_submenu = service.update_submenu(
+):
+    updated_submenu = await service.update_submenu(
         submenu_id=submenu_id,
         updated_data=updated_submenu
     )
@@ -101,9 +101,9 @@ def update_submenu(
                 'так-же удаляются все блюда, принадлежащих меню.',
     tags=[Tags.submenus],
 )
-def delete_submenu(
+async def delete_submenu(
         menu_id: str,
         submenu_id: str,
         service=Depends(Service),
 ):
-    service.delete_submenu(menu_id=menu_id, submenu_id=submenu_id)
+    await service.delete_submenu(menu_id=menu_id, submenu_id=submenu_id)

@@ -18,10 +18,10 @@ menus_router = APIRouter(
     summary='Список всех меню',
     tags=[Tags.menus],
 )
-def get_all_menus(
+async def get_all_menus(
         service=Depends(Service),
 ) -> list[MenuSchema]:
-    return service.get_all_menus()
+    return await service.get_all_menus()
 
 
 @menus_router.get(
@@ -32,11 +32,11 @@ def get_all_menus(
     tags=[Tags.menus],
     responses={404: {'detail': {'menu not found'}}},
 )
-def get_menu_by_id(
+async def get_menu_by_id(
         menu_id: str,
         service=Depends(Service),
 ) -> MenuSchema:
-    menu = service.get_menu(menu_id)
+    menu = await service.get_menu(menu_id)
 
     if menu is None:
         raise HTTPException(
@@ -54,11 +54,11 @@ def get_menu_by_id(
     summary='Создать меню',
     tags=[Tags.menus],
 )
-def create_menu(
+async def create_menu(
         created_menu: CreateMenuSchema,
         service=Depends(Service),
 ) -> MenuSchema:
-    return service.create_menu(created_menu)
+    return await service.create_menu(created_menu)
 
 
 @menus_router.patch(
@@ -69,12 +69,12 @@ def create_menu(
     tags=[Tags.menus],
     responses={404: {'detail': {'menu not found'}}},
 )
-def update_menu(
+async def update_menu(
         menu_id: str,
         update_menu_data: UpdateMenuSchema,
         service=Depends(Service),
 ) -> MenuSchema:
-    updated_menu = service.update_menu(menu_id, update_menu_data)
+    updated_menu = await service.update_menu(menu_id, update_menu_data)
     if updated_menu is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -92,8 +92,8 @@ def update_menu(
                 'также удаляются все подменю и блюда принадлежащие меню',
     tags=[Tags.menus],
 )
-def delete_menu(
+async def delete_menu(
         menu_id: str,
         service=Depends(Service),
 ):
-    service.delete_menu(menu_id)
+    await service.delete_menu(menu_id)

@@ -17,7 +17,7 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
-    def get_all_submenu(
+    async def get_all_submenu(
             self,
             menu_id: str
     ) -> list[SubmenuModel] | list[dict[str, str]]:
@@ -38,7 +38,7 @@ class Service(BaseService):
 
         return all_submenus
 
-    def get_submenu(
+    async def get_submenu(
             self,
             submenu_id: str
     ) -> SubmenuModel | dict[str, str] | None:
@@ -59,7 +59,7 @@ class Service(BaseService):
 
         return submenu
 
-    def create_submenu(
+    async def create_submenu(
             self,
             menu_id: str,
             created_submenu: CreateSubmenuSchema
@@ -87,7 +87,7 @@ class Service(BaseService):
 
         return submenu
 
-    def update_submenu(
+    async def update_submenu(
             self,
             submenu_id: str,
             updated_data: UpdateSubmenuSchema,
@@ -115,7 +115,7 @@ class Service(BaseService):
             )
         return submenu
 
-    def delete_submenu(self, menu_id: str, submenu_id: str):
+    async def delete_submenu(self, menu_id: str, submenu_id: str):
         """Сервис для удаления подменю."""
         self.cache.delete_value(menu_id)
         self.cache.delete_value(submenu_id)

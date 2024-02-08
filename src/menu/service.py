@@ -22,7 +22,7 @@ class Service(BaseService):
         self.cache = cache
         self.submenu_repository = submenu_repository
 
-    def get_all_menus(self) -> list[MenuModel] | list[dict[str, str]]:
+    async def get_all_menus(self) -> list[MenuModel] | list[dict[str, str]]:
         key: str = self.get_key_for_all_datas('menus')
         all_menus_from_cache: list[dict[str, str]] = self.cache.get_value(key)
 
@@ -39,7 +39,7 @@ class Service(BaseService):
 
         return all_menus
 
-    def get_menu(self, menu_id: str) -> MenuModel | dict[str, str] | None:
+    async def get_menu(self, menu_id: str) -> MenuModel | dict[str, str] | None:
         """
         Сервис для получения определённого меню.
         Проверяет наличие в кэше, если нет то достаёт из базы данных,
@@ -57,7 +57,7 @@ class Service(BaseService):
 
         return menu
 
-    def create_menu(self, created_menu: CreateMenuSchema) -> MenuModel:
+    async def create_menu(self, created_menu: CreateMenuSchema) -> MenuModel:
         """
         Сервис для создания нового меню.
         Созданное блюдо кладёт в кэш.
@@ -69,7 +69,7 @@ class Service(BaseService):
 
         return menu
 
-    def update_menu(
+    async def update_menu(
             self,
             menu_id: str,
             updated_data: UpdateMenuSchema
@@ -93,7 +93,7 @@ class Service(BaseService):
 
         return menu
 
-    def delete_menu(self, menu_id: str):
+    async def delete_menu(self, menu_id: str):
         """Сервис для удаления меню."""
         self.cache.delete_value(menu_id)
         all_submenus: list[SubmenuModel] = self.submenu_repository.get_all(

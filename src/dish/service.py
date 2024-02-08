@@ -17,7 +17,7 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
-    def get_all_dishes(
+    async def get_all_dishes(
             self,
             submenu_id: str
     ) -> list[DishSchema] | dict[str, str]:
@@ -38,7 +38,7 @@ class Service(BaseService):
 
         return all_dishes
 
-    def get_dish(self, dish_id: str) -> DishModel | dict[str, str] | None:
+    async def get_dish(self, dish_id: str) -> DishModel | dict[str, str] | None:
         """
         Сервис для получения определённого блюда.
         Проверяет наличие в кэше, если нет то достаёт из базы данных,
@@ -60,7 +60,7 @@ class Service(BaseService):
 
         return dish
 
-    def create_dish(
+    async def create_dish(
             self,
             menu_id: str,
             submenu_id: str,
@@ -96,7 +96,7 @@ class Service(BaseService):
 
         return dish
 
-    def update_dish(
+    async def update_dish(
             self,
             dish_id: str,
             updated_data: UpdateDishSchema
@@ -122,7 +122,7 @@ class Service(BaseService):
 
         return dish
 
-    def delete_dish(
+    async def delete_dish(
             self,
             menu_id: str,
             submenu_id: str,
