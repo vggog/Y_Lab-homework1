@@ -28,7 +28,7 @@ class Service(BaseService):
             submenu_id: str
     ) -> list[DishSchema] | dict[str, str]:
         key: str = self.get_key_for_all_datas('dishes', submenu_id)
-        all_dishes_from_cache: dict[str, str] | None = self.cache.get_value(
+        all_dishes_from_cache: dict[str, str] | None = await self.cache.get_value(
             key=key
         )
         if all_dishes_from_cache is not None:
@@ -39,7 +39,7 @@ class Service(BaseService):
             async_session=self.async_session,
         )
 
-        self.cache.set_list_of_values(
+        await self.cache.set_list_of_values(
             key=key,
             datas=all_dishes,
             schema=DishSchema,
@@ -53,7 +53,7 @@ class Service(BaseService):
         Проверяет наличие в кэше, если нет то достаёт из базы данных,
         кладёт в кэш и возвращает.
         """
-        dish_from_cache: dict[str, str] = self.cache.get_value(dish_id)
+        dish_from_cache: dict[str, str] = await self.cache.get_value(dish_id)
         if dish_from_cache is not None:
             return dish_from_cache
 
@@ -64,7 +64,7 @@ class Service(BaseService):
         if dish is None:
             return None
 
-        self.cache.set_value(
+        await self.cache.set_value(
             key=dish.id,
             data=dish,
             schema=DishSchema,
@@ -89,21 +89,21 @@ class Service(BaseService):
             **created_dish.model_dump()
         )
 
-        self.cache.set_value(
+        await self.cache.set_value(
             key=dish.id,
             data=dish,
             schema=DishSchema,
         )
 
-        self.cache.delete_value(menu_id)
-        self.cache.delete_value(submenu_id)
-        self.cache.delete_value(
+        await self.cache.delete_value(menu_id)
+        await self.cache.delete_value(submenu_id)
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('dishes', submenu_id)
         )
-        self.cache.delete_value(
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('submenus', menu_id)
         )
-        self.cache.delete_value(
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('menus')
         )
 
@@ -122,13 +122,13 @@ class Service(BaseService):
             updated_data.model_dump()
         )
 
-        self.cache.delete_value(dish_id)
+        await self.cache.delete_value(dish_id)
         dish: DishModel | None = await self.repository.update(
             dish_id,
             async_session=self.async_session,
             **updated_data_dict,
         )
-        self.cache.set_value(
+        await self.cache.set_value(
             key=dish_id,
             data=dish,
             schema=DishSchema,
@@ -146,16 +146,16 @@ class Service(BaseService):
         Сервис для удаления блюда.
         Для инвалидации удаляет связанные с блюдом меню и подменю.
         """
-        self.cache.delete_value(menu_id)
-        self.cache.delete_value(submenu_id)
-        self.cache.delete_value(dish_id)
-        self.cache.delete_value(
+        await self.cache.delete_value(menu_id)
+        await self.cache.delete_value(submenu_id)
+        await self.cache.delete_value(dish_id)
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('dishes', submenu_id)
         )
-        self.cache.delete_value(
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('submenus', menu_id)
         )
-        self.cache.delete_value(
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('menus')
         )
 

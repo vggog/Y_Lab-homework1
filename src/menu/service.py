@@ -30,7 +30,9 @@ class Service(BaseService):
 
     async def get_all_menus(self) -> list[MenuModel] | list[dict[str, str]]:
         key: str = self.get_key_for_all_datas('menus')
-        all_menus_from_cache: list[dict[str, str]] = self.cache.get_value(key)
+        all_menus_from_cache: list[dict[str, str]] = await self.cache.get_value(
+            key
+        )
 
         if all_menus_from_cache is not None:
             return all_menus_from_cache
@@ -39,7 +41,7 @@ class Service(BaseService):
             async_session=self.async_session,
         )
 
-        self.cache.set_list_of_values(
+        await self.cache.set_list_of_values(
             key=key,
             datas=all_menus,
             schema=MenuSchema,
@@ -53,7 +55,7 @@ class Service(BaseService):
         Проверяет наличие в кэше, если нет то достаёт из базы данных,
         кладёт в кэ и возвращает.
         """
-        menu_from_caching: dict[str, str] = self.cache.get_value(menu_id)
+        menu_from_caching: dict[str, str] = await self.cache.get_value(menu_id)
         if menu_from_caching is not None:
             return menu_from_caching
 
@@ -77,8 +79,8 @@ class Service(BaseService):
             async_session=self.async_session,
             **created_menu.model_dump(),
         )
-        self.cache.set_value(menu.id, menu, MenuSchema)
-        self.cache.delete_value(self.get_key_for_all_datas('menus'))
+        await self.cache.set_value(menu.id, menu, MenuSchema)
+        await self.cache.delete_value(self.get_key_for_all_datas('menus'))
 
         return menu
 
@@ -95,7 +97,7 @@ class Service(BaseService):
             updated_data.model_dump()
         )
 
-        self.cache.delete_value(menu_id)
+        await self.cache.delete_value(menu_id)
 
         menu: MenuModel | None = await self.repository.update(
             menu_id,
@@ -103,29 +105,29 @@ class Service(BaseService):
             **updated_data_dict,
         )
         if menu is not None:
-            self.cache.set_value(menu.id, menu, MenuSchema)
+            await self.cache.set_value(menu.id, menu, MenuSchema)
 
         return menu
 
     async def delete_menu(self, menu_id: str):
         """Сервис для удаления меню."""
-        self.cache.delete_value(menu_id)
+        await self.cache.delete_value(menu_id)
         all_submenus: list[SubmenuModel] = await self.submenu_repository.get_all(
             menu_id=menu_id,
             async_session=self.async_session,
         )
         for submenu in all_submenus:
-            self.cache.delete_value(submenu.id)
+            await self.cache.delete_value(submenu.id)
 
         all_dishes: list[DishModel] = await self.repository.get_all_dishes(
             menu_id,
             async_session=self.async_session,
         )
         for dish in all_dishes:
-            self.cache.delete_value(dish.id)
+            await self.cache.delete_value(dish.id)
 
         await self.repository.delete(
             menu_id,
             async_session=self.async_session,
         )
-        self.cache.delete_value(self.get_key_for_all_datas('menus'))
+        await self.cache.delete_value(self.get_key_for_all_datas('menus'))

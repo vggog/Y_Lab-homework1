@@ -28,7 +28,7 @@ class Service(BaseService):
             menu_id: str
     ) -> list[SubmenuModel] | list[dict[str, str]]:
         key = self.get_key_for_all_datas('submenus', menu_id)
-        all_submenus_from_cache = self.cache.get_value(key)
+        all_submenus_from_cache = await self.cache.get_value(key)
         if all_submenus_from_cache is not None:
             return all_submenus_from_cache
 
@@ -37,7 +37,7 @@ class Service(BaseService):
             async_session=self.async_session,
         )
 
-        self.cache.set_list_of_values(
+        await self.cache.set_list_of_values(
             key=key,
             datas=all_submenus,
             schema=SubmenuSchema,
@@ -50,7 +50,9 @@ class Service(BaseService):
             submenu_id: str
     ) -> SubmenuModel | dict[str, str] | None:
         """Сервис для получения подменю."""
-        submenu_from_cache: dict[str, str] = self.cache.get_value(submenu_id)
+        submenu_from_cache: dict[str, str] = await self.cache.get_value(
+            submenu_id
+        )
         if submenu_from_cache is not None:
             return submenu_from_cache
 
@@ -61,7 +63,7 @@ class Service(BaseService):
         if submenu is None:
             return None
 
-        self.cache.set_value(
+        await self.cache.set_value(
             key=submenu.id,
             data=submenu,
             schema=SubmenuSchema,
@@ -83,16 +85,16 @@ class Service(BaseService):
             async_session=self.async_session,
             **created_submenu.model_dump(),
         )
-        self.cache.set_value(
+        await self.cache.set_value(
             key=submenu.id,
             data=submenu,
             schema=SubmenuSchema,
         )
-        self.cache.delete_value(menu_id)
-        self.cache.delete_value(
+        await self.cache.delete_value(menu_id)
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('submenus', menu_id)
         )
-        self.cache.delete_value(
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('menus')
         )
 
@@ -111,7 +113,7 @@ class Service(BaseService):
             updated_data.model_dump()
         )
 
-        self.cache.delete_value(submenu_id)
+        await self.cache.delete_value(submenu_id)
 
         submenu: SubmenuModel | None = await self.repository.update(
             submenu_id,
@@ -120,7 +122,7 @@ class Service(BaseService):
         )
 
         if submenu is not None:
-            self.cache.set_value(
+            await self.cache.set_value(
                 key=submenu.id,
                 data=submenu,
                 schema=SubmenuSchema,
@@ -129,12 +131,12 @@ class Service(BaseService):
 
     async def delete_submenu(self, menu_id: str, submenu_id: str):
         """Сервис для удаления подменю."""
-        self.cache.delete_value(menu_id)
-        self.cache.delete_value(submenu_id)
-        self.cache.delete_value(
+        await self.cache.delete_value(menu_id)
+        await self.cache.delete_value(submenu_id)
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('submenus', menu_id)
         )
-        self.cache.delete_value(
+        await self.cache.delete_value(
             key=self.get_key_for_all_datas('menus')
         )
 

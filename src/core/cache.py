@@ -1,6 +1,6 @@
 import json
 
-import redis
+import redis.asyncio as redis
 
 from src.core.config import redis_config
 from src.core.model import BaseModel
@@ -17,7 +17,7 @@ class Cache:
             decode_responses=self.redis_conf.decode_response,
         )
 
-    def set_value(self, key: str, data: BaseModel, schema) -> None:
+    async def set_value(self, key: str, data: BaseModel, schema) -> None:
         """
         Метод для сохранения данных в redis
         key: ключ,
@@ -26,9 +26,17 @@ class Cache:
             и сохраняются в redis.
         """
         data_for_saving = schema(**data.__dict__)
-        self._redis_client().set(key, value=data_for_saving.model_dump_json())
+        await self._redis_client().set(
+            key,
+            value=data_for_saving.model_dump_json()
+        )
 
-    def set_list_of_values(self, key: str, datas: list[BaseModel], schema) -> None:
+    async def set_list_of_values(
+            self,
+            key: str,
+            datas: list[BaseModel],
+            schema
+    ) -> None:
         """
         Метод для сохранения списка данных.
         :param key: ключ
@@ -41,18 +49,18 @@ class Cache:
         for data in datas:
             saving_datas.append(schema(**data.__dict__).model_dump())
 
-        self._redis_client().set(key, value=json.dumps(saving_datas))
+        await self._redis_client().set(key, value=json.dumps(saving_datas))
 
-    def get_value(
+    async def get_value(
             self,
             key: str
     ) -> list[dict[str, str]] | dict[str, str] | None:
         """Метод для получения данных."""
-        data = self._redis_client().get(name=key)
+        data = await self._redis_client().get(name=key)
         if data is None:
             return None
 
         return json.loads(data)
 
-    def delete_value(self, key: str) -> None:
-        self._redis_client().delete(key)
+    async def delete_value(self, key: str) -> None:
+        await self._redis_client().delete(key)
