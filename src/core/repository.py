@@ -1,52 +1,84 @@
-from sqlalchemy import create_engine, delete, update
-from sqlalchemy.orm import Session
+from typing import Sequence
+
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.sql.dml import Delete, ReturningUpdate
 
-from .config import db_config
 from .model import BaseModel
 
 
 class BaseRepository:
     _model: type[BaseModel] = NotImplemented
-    engine = create_engine(db_config.alchemy_url)
 
-    def get_all(self, **filters) -> list[BaseModel]:
-        with Session(self.engine) as session:
-            return session.query(self._model).filter_by(**filters).all()
+    async def get_all(
+            self,
+            async_session: async_sessionmaker[AsyncSession],
+            **filters
+    ) -> Sequence[BaseModel]:
+        stmt = select(self._model).filter_by(**filters)
+        async with async_session() as session:
+            res = await session.execute(stmt)
 
-    def get(self, **filters) -> BaseModel | None:
-        with Session(self.engine) as session:
-            return session.query(self._model).filter_by(**filters).first()
+        return res.scalars().all()
 
-    def create(self, **kwargs) -> BaseModel:
+    async def get(
+            self,
+            async_session: async_sessionmaker[AsyncSession],
+            **filters
+    ) -> BaseModel | None:
+        stmt = select(self._model).filter_by(**filters)
+
+        async with async_session() as session:
+            res = await session.execute(stmt)
+
+        return res.scalars().first()
+
+    async def create(
+            self,
+            async_session: async_sessionmaker[AsyncSession],
+            **kwargs
+    ) -> BaseModel:
         created_object: BaseModel = self._model(**kwargs)
 
-        with Session(self.engine) as session:
+        async with async_session() as session:
             session.add(created_object)
-            session.commit()
-            session.refresh(created_object)
+            await session.commit()
+            await session.refresh(created_object)
 
         return created_object
 
-    def update(self, object_id: str, **kwargs) -> BaseModel | None:
+    async def update(
+            self,
+            object_id: str,
+            async_session: async_sessionmaker[AsyncSession],
+            **kwargs
+    ) -> BaseModel | None:
         stmt: ReturningUpdate = (
             update(self._model).
             where(self._model.id == object_id).
             values(**kwargs).returning()
         )
 
-        with Session(self.engine) as session:
-            session.execute(stmt)
-            session.commit()
+        async with async_session() as session:
+            await session.execute(stmt)
+            await session.commit()
 
-            return session.query(self._model).filter_by(id=object_id).first()
+            res = await session.execute(
+                select(self._model).where(self._model.id == object_id)
+            )
 
-    def delete(self, object_id: str):
+        return res.scalars().first()
+
+    async def delete(
+            self,
+            object_id: str,
+            async_session: async_sessionmaker[AsyncSession],
+    ):
         stmt: Delete = (
             delete(self._model).
             where(self._model.id == object_id)
         )
 
-        with Session(self.engine) as session:
-            session.execute(stmt)
-            session.commit()
+        async with async_session() as session:
+            await session.execute(stmt)
+            await session.commit()

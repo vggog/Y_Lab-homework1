@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.repository import BaseRepository
 from src.dish.model import DishModel
@@ -7,6 +8,15 @@ from src.dish.model import DishModel
 class Repository(BaseRepository):
     _model = DishModel
 
-    def get_by_id(self, object_id: str) -> DishModel | None:
-        with Session(self.engine) as session:
-            return session.query(self._model).filter_by(id=object_id).first()
+    async def get_by_id(
+            self,
+            async_session: async_sessionmaker[AsyncSession],
+            object_id: str
+    ) -> DishModel | None:
+
+        stmt = select(self._model).where(self._model.id == object_id)
+
+        async with async_session() as session:
+            res = await session.execute(stmt)
+
+        return res.scalars().first()

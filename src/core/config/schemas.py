@@ -15,7 +15,7 @@ class DBConfig:
             '{dialect_driver}'
             '://{username}:{password}@{host}:{port}/{database}'
         ).format(
-            dialect_driver='postgresql+psycopg2',
+            dialect_driver='postgresql+asyncpg',
             username=self.user,
             password=self.password,
             host=self.host,

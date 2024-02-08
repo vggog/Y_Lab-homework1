@@ -46,5 +46,4 @@ def load_redis_config() -> RedisConfig:
     )
 
 
-db_config = load_db_config()
 redis_config = load_redis_config()

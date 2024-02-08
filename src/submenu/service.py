@@ -1,6 +1,8 @@
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.cache import Cache
+from src.core.db_session import get_db_session
 from src.core.service import BaseService
 from src.submenu.model import SubmenuModel
 from src.submenu.repository import Repository
@@ -13,7 +15,11 @@ class Service(BaseService):
             self,
             repository=Depends(Repository),
             cache=Depends(Cache),
+            async_session: async_sessionmaker[AsyncSession] = Depends(
+                get_db_session
+            ),
     ):
+        self.async_session = async_session
         self.repository = repository
         self.cache = cache
 
@@ -26,8 +32,9 @@ class Service(BaseService):
         if all_submenus_from_cache is not None:
             return all_submenus_from_cache
 
-        all_submenus: list[SubmenuModel] = self.repository.get_all(
-            menu_id=menu_id
+        all_submenus: list[SubmenuModel] = await self.repository.get_all(
+            menu_id=menu_id,
+            async_session=self.async_session,
         )
 
         self.cache.set_list_of_values(
@@ -47,7 +54,10 @@ class Service(BaseService):
         if submenu_from_cache is not None:
             return submenu_from_cache
 
-        submenu: SubmenuModel = self.repository.get(id=submenu_id)
+        submenu: SubmenuModel = await self.repository.get(
+            id=submenu_id,
+            async_session=self.async_session,
+        )
         if submenu is None:
             return None
 
@@ -68,8 +78,9 @@ class Service(BaseService):
         Метод для создания меню.
         Созданное меню добавляется в кэш.
         """
-        submenu: SubmenuModel = self.repository.create(
+        submenu: SubmenuModel = await self.repository.create(
             menu_id=menu_id,
+            async_session=self.async_session,
             **created_submenu.model_dump(),
         )
         self.cache.set_value(
@@ -102,8 +113,9 @@ class Service(BaseService):
 
         self.cache.delete_value(submenu_id)
 
-        submenu: SubmenuModel | None = self.repository.update(
+        submenu: SubmenuModel | None = await self.repository.update(
             submenu_id,
+            async_session=self.async_session,
             **updated_data_dict
         )
 
@@ -126,4 +138,7 @@ class Service(BaseService):
             key=self.get_key_for_all_datas('menus')
         )
 
-        self.repository.delete(submenu_id)
+        await self.repository.delete(
+            submenu_id,
+            async_session=self.async_session,
+        )

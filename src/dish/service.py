@@ -1,6 +1,8 @@
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.cache import Cache
+from src.core.db_session import get_db_session
 from src.core.service import BaseService
 from src.dish.model import DishModel
 from src.dish.repository import Repository
@@ -13,7 +15,11 @@ class Service(BaseService):
             self,
             repository=Depends(Repository),
             cache=Depends(Cache),
+            async_session: async_sessionmaker[AsyncSession] = Depends(
+                get_db_session
+            ),
     ):
+        self.async_session = async_session
         self.repository = repository
         self.cache = cache
 
@@ -28,7 +34,10 @@ class Service(BaseService):
         if all_dishes_from_cache is not None:
             return all_dishes_from_cache
 
-        all_dishes = self.repository.get_all(submenu_id=submenu_id)
+        all_dishes = await self.repository.get_all(
+            submenu_id=submenu_id,
+            async_session=self.async_session,
+        )
 
         self.cache.set_list_of_values(
             key=key,
@@ -48,7 +57,10 @@ class Service(BaseService):
         if dish_from_cache is not None:
             return dish_from_cache
 
-        dish: DishModel | None = self.repository.get(id=dish_id)
+        dish: DishModel | None = await self.repository.get(
+            id=dish_id,
+            async_session=self.async_session,
+        )
         if dish is None:
             return None
 
@@ -71,8 +83,9 @@ class Service(BaseService):
         Созданное блюдо кладёт в кэш.
         Для инвалидации удаляет связанные с блюдом меню и подменю.
         """
-        dish: DishModel = self.repository.create(
+        dish: DishModel = await self.repository.create(
             submenu_id=submenu_id,
+            async_session=self.async_session,
             **created_dish.model_dump()
         )
 
@@ -110,9 +123,10 @@ class Service(BaseService):
         )
 
         self.cache.delete_value(dish_id)
-        dish: DishModel | None = self.repository.update(
+        dish: DishModel | None = await self.repository.update(
             dish_id,
-            **updated_data_dict
+            async_session=self.async_session,
+            **updated_data_dict,
         )
         self.cache.set_value(
             key=dish_id,
@@ -145,4 +159,7 @@ class Service(BaseService):
             key=self.get_key_for_all_datas('menus')
         )
 
-        self.repository.delete(dish_id)
+        await self.repository.delete(
+            dish_id,
+            async_session=self.async_session,
+        )
