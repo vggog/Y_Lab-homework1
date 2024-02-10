@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from src.core.config.schemas import DBConfig, RedisConfig
+from src.core.config.schemas import DBConfig, RedisConfig, RabbitMQConfig
 
 
 load_dotenv()
@@ -46,4 +46,23 @@ def load_redis_config() -> RedisConfig:
     )
 
 
+def load_rabbitmq_config() -> RabbitMQConfig:
+    """Функция для проверки и загрузки конфигов для RabbitMQ"""
+    user = os.getenv('RABBITMQ_DEFAULT_USER')
+    password = os.getenv('RABBITMQ_DEFAULT_PASS')
+    port = os.getenv('RABBITMQ_DEFAULT_PORT')
+    host = os.getenv('RABBITMQ_HOST')
+
+    if (not user) or (not password) or (not port) or (not host):
+        raise TypeError('Конфиги RabbitMQне заполнены.')
+
+    return RabbitMQConfig(
+        user=user,
+        password=password,
+        port=port,
+        host=host
+    )
+
+
+db_config = load_db_config()
 redis_config = load_redis_config()

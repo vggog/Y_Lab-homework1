@@ -8,5 +8,6 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update
 
 COPY requirements.txt .
+COPY . /app
 
 RUN pip install -r requirements.txt
