@@ -1,9 +1,16 @@
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.cache import Cache
 from src.core.db_session import get_db_session
 from src.core.service import BaseService
+from src.dish.background_tasks import (
+    create_dish_invalidate_cache,
+    delete_dish_invalidate_cache,
+    set_all_dishes_invalidate_cache,
+    set_dish_invalidate_cache,
+    update_dish_invalidate_cache,
+)
 from src.dish.model import DishModel
 from src.dish.repository import Repository
 from src.dish.schemas import CreateDishSchema, DishSchema, UpdateDishSchema
@@ -25,7 +32,8 @@ class Service(BaseService):
 
     async def get_all_dishes(
             self,
-            submenu_id: str
+            submenu_id: str,
+            background_tasks: BackgroundTasks,
     ) -> list[DishSchema] | dict[str, str]:
         key: str = self.get_key_for_all_datas('dishes', submenu_id)
         all_dishes_from_cache: dict[str, str] | None = await self.cache.get_value(
@@ -39,15 +47,20 @@ class Service(BaseService):
             async_session=self.async_session,
         )
 
-        await self.cache.set_list_of_values(
+        background_tasks.add_task(
+            set_all_dishes_invalidate_cache,
             key=key,
             datas=all_dishes,
-            schema=DishSchema,
+            cache=self.cache,
         )
 
         return all_dishes
 
-    async def get_dish(self, dish_id: str) -> DishModel | dict[str, str] | None:
+    async def get_dish(
+            self,
+            dish_id: str,
+            background_tasks: BackgroundTasks,
+    ) -> DishModel | dict[str, str] | None:
         """
         Сервис для получения определённого блюда.
         Проверяет наличие в кэше, если нет то достаёт из базы данных,
@@ -64,10 +77,10 @@ class Service(BaseService):
         if dish is None:
             return None
 
-        await self.cache.set_value(
-            key=dish.id,
-            data=dish,
-            schema=DishSchema,
+        background_tasks.add_task(
+            set_dish_invalidate_cache,
+            dish=dish,
+            cache=self.cache,
         )
 
         return dish
@@ -76,7 +89,8 @@ class Service(BaseService):
             self,
             menu_id: str,
             submenu_id: str,
-            created_dish: CreateDishSchema
+            created_dish: CreateDishSchema,
+            background_tasks: BackgroundTasks,
     ) -> DishModel:
         """
         Сорвис для создания нового блюда.
@@ -89,22 +103,12 @@ class Service(BaseService):
             **created_dish.model_dump()
         )
 
-        await self.cache.set_value(
-            key=dish.id,
-            data=dish,
-            schema=DishSchema,
-        )
-
-        await self.cache.delete_value(menu_id)
-        await self.cache.delete_value(submenu_id)
-        await self.cache.delete_value(
-            key=self.get_key_for_all_datas('dishes', submenu_id)
-        )
-        await self.cache.delete_value(
-            key=self.get_key_for_all_datas('submenus', menu_id)
-        )
-        await self.cache.delete_value(
-            key=self.get_key_for_all_datas('menus')
+        background_tasks.add_task(
+            create_dish_invalidate_cache,
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish=dish,
+            cache=self.cache,
         )
 
         return dish
@@ -112,7 +116,8 @@ class Service(BaseService):
     async def update_dish(
             self,
             dish_id: str,
-            updated_data: UpdateDishSchema
+            updated_data: UpdateDishSchema,
+            background_tasks: BackgroundTasks,
     ) -> DishModel | None:
         """
         Сервис для обновления блюда.
@@ -122,16 +127,19 @@ class Service(BaseService):
             updated_data.model_dump()
         )
 
-        await self.cache.delete_value(dish_id)
         dish: DishModel | None = await self.repository.update(
             dish_id,
             async_session=self.async_session,
             **updated_data_dict,
         )
-        await self.cache.set_value(
-            key=dish_id,
-            data=dish,
-            schema=DishSchema,
+        if dish is None:
+            return dish
+
+        background_tasks.add_task(
+            update_dish_invalidate_cache,
+            dish_id=dish_id,
+            dish=dish,
+            cache=self.cache,
         )
 
         return dish
@@ -140,23 +148,19 @@ class Service(BaseService):
             self,
             menu_id: str,
             submenu_id: str,
-            dish_id: str
+            dish_id: str,
+            background_tasks: BackgroundTasks,
     ):
         """
         Сервис для удаления блюда.
         Для инвалидации удаляет связанные с блюдом меню и подменю.
         """
-        await self.cache.delete_value(menu_id)
-        await self.cache.delete_value(submenu_id)
-        await self.cache.delete_value(dish_id)
-        await self.cache.delete_value(
-            key=self.get_key_for_all_datas('dishes', submenu_id)
-        )
-        await self.cache.delete_value(
-            key=self.get_key_for_all_datas('submenus', menu_id)
-        )
-        await self.cache.delete_value(
-            key=self.get_key_for_all_datas('menus')
+        background_tasks.add_task(
+            delete_dish_invalidate_cache,
+            dish_id=dish_id,
+            submenu_id=submenu_id,
+            menu_id=menu_id,
+            cache=self.cache,
         )
 
         await self.repository.delete(

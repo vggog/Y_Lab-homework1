@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from starlette import status
 
 from src.core.openapi_tags import Tags
@@ -21,9 +21,13 @@ dish_router = APIRouter(
 )
 async def get_all_dishes(
         submenu_id: str,
+        background_tasks: BackgroundTasks,
         service=Depends(Service),
 ) -> list[DishSchema]:
-    return await service.get_all_dishes(submenu_id=submenu_id)
+    return await service.get_all_dishes(
+        submenu_id=submenu_id,
+        background_tasks=background_tasks,
+    )
 
 
 @dish_router.get(
@@ -36,9 +40,13 @@ async def get_all_dishes(
 )
 async def get_dish(
         dish_id: str,
+        background_tasks: BackgroundTasks,
         service=Depends(Service),
 ) -> DishSchema:
-    dish = await service.get_dish(dish_id)
+    dish = await service.get_dish(
+        dish_id,
+        background_tasks=background_tasks,
+    )
     if dish is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -58,6 +66,7 @@ async def get_dish(
 async def create_dish(
         menu_id: str,
         submenu_id: str,
+        background_tasks: BackgroundTasks,
         created_dish: CreateDishSchema,
         service=Depends(Service),
 ) -> DishSchema:
@@ -65,6 +74,7 @@ async def create_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
         created_dish=created_dish,
+        background_tasks=background_tasks,
     )
 
 
@@ -79,10 +89,13 @@ async def create_dish(
 async def update_dish(
         dish_id: str,
         updated_dish: UpdateDishSchema,
+        background_tasks: BackgroundTasks,
         service=Depends(Service),
 ) -> DishSchema:
     dish = await service.update_dish(
-        dish_id=dish_id, updated_data=updated_dish
+        dish_id=dish_id,
+        updated_data=updated_dish,
+        background_tasks=background_tasks,
     )
     if dish is None:
         raise HTTPException(
@@ -103,10 +116,12 @@ async def delete_dish(
         menu_id: str,
         submenu_id: str,
         dish_id: str,
+        background_tasks: BackgroundTasks,
         service=Depends(Service),
 ):
     await service.delete_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
         dish_id=dish_id,
+        background_tasks=background_tasks,
     )

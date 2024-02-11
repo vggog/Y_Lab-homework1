@@ -1,14 +1,18 @@
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.cache import Cache
-from src.core.db_session import get_db_session
 from src.core.service import BaseService
-from src.dish.model import DishModel
+from src.menu.background_tasks import (
+    create_menu_invalidate_cache,
+    delete_menu_invalidate_cache,
+    get_all_menus_invalidate_cache,
+    get_invalidate_cache,
+    update_menu_invalidate_cache,
+)
 from src.menu.model import MenuModel
 from src.menu.repository import Repository
-from src.menu.schemas import CreateMenuSchema, MenuSchema, UpdateMenuSchema
-from src.submenu.model import SubmenuModel
+from src.menu.schemas import CreateMenuSchema, UpdateMenuSchema
 from src.submenu.repository import Repository as SubmenuRepository
 
 
@@ -19,16 +23,16 @@ class Service(BaseService):
             repository=Depends(Repository),
             cache=Depends(Cache),
             submenu_repository=Depends(SubmenuRepository),
-            async_session: async_sessionmaker[AsyncSession] = Depends(
-                get_db_session
-            ),
     ):
         self.repository = repository
         self.cache = cache
         self.submenu_repository = submenu_repository
-        self.async_session = async_session
 
-    async def get_all_menus(self) -> list[MenuModel] | list[dict[str, str]]:
+    async def get_all_menus(
+            self,
+            background_tasks: BackgroundTasks,
+            async_session: async_sessionmaker[AsyncSession]
+    ) -> list[MenuModel] | list[dict[str, str]]:
         key: str = self.get_key_for_all_datas('menus')
         all_menus_from_cache: list[dict[str, str]] = await self.cache.get_value(
             key
@@ -38,18 +42,24 @@ class Service(BaseService):
             return all_menus_from_cache
 
         all_menus: list[MenuModel] = await self.repository.get_all(
-            async_session=self.async_session,
+            async_session=async_session,
         )
 
-        await self.cache.set_list_of_values(
+        background_tasks.add_task(
+            get_all_menus_invalidate_cache,
             key=key,
             datas=all_menus,
-            schema=MenuSchema,
+            cache=self.cache,
         )
 
         return all_menus
 
-    async def get_menu(self, menu_id: str) -> MenuModel | dict[str, str] | None:
+    async def get_menu(
+            self,
+            menu_id: str,
+            background_tasks: BackgroundTasks,
+            async_session: async_sessionmaker[AsyncSession],
+    ) -> MenuModel | dict[str, str] | None:
         """
         Сервис для получения определённого меню.
         Проверяет наличие в кэше, если нет то достаёт из базы данных,
@@ -61,33 +71,46 @@ class Service(BaseService):
 
         menu: MenuModel = await self.repository.get(
             id=menu_id,
-            async_session=self.async_session,
+            async_session=async_session,
         )
         if menu is None:
             return None
 
-        self.cache.set_value(menu.id, menu, MenuSchema)
-
+        background_tasks.add_task(
+            get_invalidate_cache,
+            menu=menu,
+            cache=self.cache,
+        )
         return menu
 
-    async def create_menu(self, created_menu: CreateMenuSchema) -> MenuModel:
+    async def create_menu(
+            self,
+            created_menu: CreateMenuSchema,
+            background_tasks: BackgroundTasks,
+            async_session: async_sessionmaker[AsyncSession],
+    ) -> MenuModel:
         """
         Сервис для создания нового меню.
         Созданное блюдо кладёт в кэш.
         """
         menu: MenuModel = await self.repository.create(
-            async_session=self.async_session,
+            async_session=async_session,
             **created_menu.model_dump(),
         )
-        await self.cache.set_value(menu.id, menu, MenuSchema)
-        await self.cache.delete_value(self.get_key_for_all_datas('menus'))
-
+        background_tasks.add_task(
+            create_menu_invalidate_cache,
+            menu_id=menu.id,
+            menu=menu,
+            cache=self.cache,
+        )
         return menu
 
     async def update_menu(
             self,
             menu_id: str,
-            updated_data: UpdateMenuSchema
+            updated_data: UpdateMenuSchema,
+            background_tasks: BackgroundTasks,
+            async_session: async_sessionmaker[AsyncSession],
     ) -> MenuModel | None:
         """
         Сервис для обновления меню.
@@ -97,37 +120,41 @@ class Service(BaseService):
             updated_data.model_dump()
         )
 
-        await self.cache.delete_value(menu_id)
-
         menu: MenuModel | None = await self.repository.update(
             menu_id,
-            async_session=self.async_session,
+            async_session=async_session,
             **updated_data_dict,
         )
-        if menu is not None:
-            await self.cache.set_value(menu.id, menu, MenuSchema)
+        if menu is None:
+            return None
+
+        background_tasks.add_task(
+            update_menu_invalidate_cache,
+            menu_id=menu_id,
+            menu=menu,
+            cache=self.cache,
+        )
 
         return menu
 
-    async def delete_menu(self, menu_id: str):
+    async def delete_menu(
+            self,
+            menu_id: str,
+            background_tasks: BackgroundTasks,
+            async_session: async_sessionmaker[AsyncSession]
+    ):
         """Сервис для удаления меню."""
-        await self.cache.delete_value(menu_id)
-        all_submenus: list[SubmenuModel] = await self.submenu_repository.get_all(
-            menu_id=menu_id,
-            async_session=self.async_session,
-        )
-        for submenu in all_submenus:
-            await self.cache.delete_value(submenu.id)
 
-        all_dishes: list[DishModel] = await self.repository.get_all_dishes(
-            menu_id,
-            async_session=self.async_session,
+        background_tasks.add_task(
+            delete_menu_invalidate_cache,
+            menu_id=menu_id,
+            async_session=async_session,
+            cache=self.cache,
+            menu_repository=self.repository,
+            submenu_repository=self.submenu_repository,
         )
-        for dish in all_dishes:
-            await self.cache.delete_value(dish.id)
 
         await self.repository.delete(
             menu_id,
-            async_session=self.async_session,
+            async_session=async_session,
         )
-        await self.cache.delete_value(self.get_key_for_all_datas('menus'))
