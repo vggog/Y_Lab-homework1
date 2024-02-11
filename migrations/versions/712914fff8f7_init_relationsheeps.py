@@ -1,15 +1,15 @@
-"""Добавить возможность удаления дочернего элемента при удалении родительского
+"""init relationsheeps
 
-Revision ID: 1b6a38c950db
-Revises: 49d0a16e68a0
-Create Date: 2024-01-22 11:03:20.075232
+Revision ID: 712914fff8f7
+Revises:
+Create Date: 2024-02-11 12:34:17.641656
 
 """
 from typing import Sequence
 
 # revision identifiers, used by Alembic.
-revision: str = '1b6a38c950db'
-down_revision: str | None = '49d0a16e68a0'
+revision: str = '712914fff8f7'
+down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 

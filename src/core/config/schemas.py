@@ -47,3 +47,12 @@ class RedisConfig:
     port: int
     charset: str
     decode_response: bool
+
+
+@dataclass
+class AppConfig:
+    excel_doc_path: str
+    url_prefix = 'http://back:8000/api/v1'
+    menus_postfix = '/menus'
+    submenus_postfix = '/menus/{menu_id}/submenus'
+    dishes_postfix = '/menus/{menu_id}/submenus/{submenu_id}/dishes'

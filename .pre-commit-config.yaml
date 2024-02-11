@@ -54,9 +54,10 @@ repos:
     rev: v0.991
     hooks:
     -   id: mypy
-        exclude: 'alembic'
+        exclude: 'migrations'
         additional_dependencies:
             [
                 types-redis,
                 types-openpyxl,
+                types-requests
             ]

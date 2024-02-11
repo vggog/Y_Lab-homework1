@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
-from src.core.config.schemas import DBConfig, RedisConfig, RabbitMQConfig
+from src.core.config.schemas import DBConfig, RedisConfig, RabbitMQConfig, AppConfig
 
 
 load_dotenv()
@@ -64,5 +64,18 @@ def load_rabbitmq_config() -> RabbitMQConfig:
     )
 
 
+def load_app_conf() -> AppConfig:
+    """Функция для загрузки конфигов приложения"""
+    excel_doc_path = os.getenv('EXCEL_DOC_PATH')
+
+    if not excel_doc_path:
+        raise TypeError('Конфиги для приложения не заполнены.')
+
+    return AppConfig(
+        excel_doc_path=excel_doc_path
+    )
+
+
+app_config = load_app_conf()
 db_config = load_db_config()
 redis_config = load_redis_config()

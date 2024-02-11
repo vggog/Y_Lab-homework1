@@ -1,6 +1,9 @@
 from celery import Celery
+from openpyxl import load_workbook
 
-from src.core.config import load_rabbitmq_config
+from src.core.config import app_config, load_rabbitmq_config
+from src.tasks.db_updater import DataBaseUpdater
+from src.tasks.excel_parser import ParseExcel
 
 celery = Celery(
     'tasks',
@@ -10,8 +13,9 @@ celery = Celery(
 
 @celery.task(
     default_retry_delay=15,
-    max_retries=None,
 )
 def update_base():
     """Задача обновления данных в базе из файла."""
-    print('work')
+    parser = ParseExcel(load_workbook(app_config.excel_doc_path).worksheets[0])
+    updater = DataBaseUpdater(parser.parse())
+    updater.run()
