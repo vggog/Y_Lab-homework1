@@ -13,7 +13,7 @@ from src.menu.background_tasks import (
 )
 from src.menu.model import MenuModel
 from src.menu.repository import Repository
-from src.menu.schemas import CreateMenuSchema, UpdateMenuSchema
+from src.menu.schemas import CreateMenuSchema, MenuSchema, UpdateMenuSchema
 from src.submenu.repository import Repository as SubmenuRepository
 
 
@@ -109,6 +109,9 @@ class Service(BaseService):
             menu=menu,
             cache=self.cache,
         )
+
+        await self.cache.set_value(menu.id, menu, MenuSchema)
+
         return menu
 
     async def create_menu(

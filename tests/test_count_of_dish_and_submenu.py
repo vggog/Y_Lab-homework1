@@ -1,9 +1,9 @@
+import pytest
+from httpx import AsyncClient
 from starlette import status
 
 from main import app
 from src.core.utils import reverse
-
-from .conftest import client
 
 menu_data = {
     'title': 'menu',
@@ -16,11 +16,14 @@ submenu_data = {
 }
 
 
-def test_create_menu_for_counting_test():
+@pytest.mark.asyncio
+async def test_create_menu_for_counting_test(
+        client: AsyncClient,
+):
     """
     :return:
     """
-    response = client.post(
+    response = await client.post(
         reverse(app, 'create_menu'),
         json=menu_data,
     )
@@ -40,13 +43,16 @@ def test_create_menu_for_counting_test():
     menu_data['id'] = created_menu['id']
 
 
-def test_create_submenu_for_counting_test():
+@pytest.mark.asyncio
+async def test_create_submenu_for_counting_test(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
 
-    response = client.post(
+    response = await client.post(
         reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data,
     )
@@ -55,14 +61,17 @@ def test_create_submenu_for_counting_test():
     submenu_data['id'] = response.json()['id']
 
 
-def test_create_dish1_for_counting_test():
+@pytest.mark.asyncio
+async def test_create_dish1_for_counting_test(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.post(
+    response = await client.post(
         reverse(
             app,
             'create_dish',
@@ -78,14 +87,17 @@ def test_create_dish1_for_counting_test():
     assert response.status_code == status.HTTP_201_CREATED
 
 
-def test_create_dish2_for_counting_test():
+@pytest.mark.asyncio
+async def test_create_dish2_for_counting_test(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.post(
+    response = await client.post(
         reverse(
             app,
             'create_dish',
@@ -101,12 +113,15 @@ def test_create_dish2_for_counting_test():
     assert response.status_code == status.HTTP_201_CREATED
 
 
-def test_check_menu():
+@pytest.mark.asyncio
+async def test_check_menu(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
-    response = client.get(
+    response = await client.get(
         reverse(app, 'get_menu_by_id', menu_id=menu_id)
     )
 
@@ -122,14 +137,17 @@ def test_check_menu():
     assert response_data['dishes_count'] == 2
 
 
-def test_check_submenu():
+@pytest.mark.asyncio
+async def test_check_submenu(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_submenu',
@@ -147,14 +165,17 @@ def test_check_submenu():
     assert response_data['dishes_count'] == 2
 
 
-def test_delete_submenu():
+@pytest.mark.asyncio
+async def test_delete_submenu(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.delete(
+    response = await client.delete(
         reverse(
             app,
             'delete_submenu',
@@ -166,12 +187,15 @@ def test_delete_submenu():
     assert response.status_code == status.HTTP_200_OK
 
 
-def get_all_submenus():
+@pytest.mark.asyncio
+async def get_all_submenus(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_all_submenus',
@@ -183,14 +207,17 @@ def get_all_submenus():
     assert response.json() is []
 
 
-def test_get_all_dishes():
+@pytest.mark.asyncio
+async def test_get_all_dishes(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_all_dishes',
@@ -204,12 +231,15 @@ def test_get_all_dishes():
     assert len(response_data) == 0
 
 
-def test_check_menu_2():
+@pytest.mark.asyncio
+async def test_check_menu_2(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
-    response = client.get(
+    response = await client.get(
         reverse(app, 'get_menu_by_id', menu_id=menu_id),
     )
 
@@ -225,23 +255,29 @@ def test_check_menu_2():
     assert response_data['dishes_count'] == 0
 
 
-def test_delete_menu():
+@pytest.mark.asyncio
+async def test_delete_menu(
+        client: AsyncClient,
+):
     """
     :return:
     """
     menu_id: str = menu_data['id']
-    response = client.delete(
+    response = await client.delete(
         reverse(app, 'delete_menu', menu_id=menu_id),
     )
 
     assert response.status_code == status.HTTP_200_OK
 
 
-def test_get_all_menus():
+@pytest.mark.asyncio
+async def test_get_all_menus(
+        client: AsyncClient,
+):
     """
     :return:
     """
-    response = client.get(
+    response = await client.get(
         reverse(app, 'get_all_menus'),
     )
 

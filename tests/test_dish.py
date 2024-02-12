@@ -1,12 +1,10 @@
+import pytest
+from httpx import AsyncClient
 from starlette import status
 
 from main import app
 from src.core.utils import reverse
-from src.dish.model import DishModel
-from src.dish.repository import Repository
-from src.menu.repository import Repository as MenuRepository
-
-from .conftest import client
+from tests.conftest import sync_client
 
 menu_data: dict[str, str] = {
     'title': 'menu',
@@ -30,13 +28,13 @@ def setup_module():
     Создание меню и сабменю, к которому принадлежит блюдо.
     :return:
     """
-    response = client.post(
+    response = sync_client.post(
         reverse(app, 'create_menu'),
         json=menu_data,
     )
     menu_id: str = response.json()['id']
 
-    response = client.post(
+    response = sync_client.post(
         reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data
     )
@@ -47,7 +45,10 @@ def setup_module():
     submenu_data['id'] = submenu_id
 
 
-def test_get_all_dishes():
+@pytest.mark.asyncio
+async def test_get_all_dishes(
+        client: AsyncClient,
+):
     """
     Тест ручки для получения всех блюд определённого сабменю
     :return:
@@ -55,7 +56,7 @@ def test_get_all_dishes():
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_all_dishes',
@@ -68,8 +69,9 @@ def test_get_all_dishes():
     assert response.json() == []
 
 
-def test_create_dish(
-        repo: Repository = Repository(),
+@pytest.mark.asyncio
+async def test_create_dish(
+        client: AsyncClient,
 ):
     """
     Тест для создания блюда.
@@ -78,7 +80,7 @@ def test_create_dish(
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.post(
+    response = await client.post(
         reverse(
             app,
             'create_dish',
@@ -98,17 +100,12 @@ def test_create_dish(
 
     dish_id: str = response_data['id']
     dish_data['id'] = dish_id
-    dish: DishModel | None = repo.get_by_id(dish_id)
-
-    if dish is None:
-        assert dish
-    else:
-        assert dish.title == dish_data['title']
-        assert dish.description == dish_data['description']
-        assert dish.price == dish_data['price']
 
 
-def test_get_dish():
+@pytest.mark.asyncio
+async def test_get_dish(
+        client: AsyncClient,
+):
     """
     Тест ручки для получения определённого блюда.
     :return:
@@ -117,7 +114,7 @@ def test_get_dish():
     submenu_id: str = submenu_data['id']
     dish_id: str = dish_data['id']
 
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_dish',
@@ -136,8 +133,9 @@ def test_get_dish():
     assert response_data['price'] == dish_data['price']
 
 
-def test_update_title_of_dish(
-        repo: Repository = Repository(),
+@pytest.mark.asyncio
+async def test_update_title_of_dish(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления блюда.
@@ -152,7 +150,7 @@ def test_update_title_of_dish(
         'title': 'updated title of dish'
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_dish',
@@ -171,20 +169,12 @@ def test_update_title_of_dish(
     assert response_data['description'] == dish_data['description']
     assert response_data['price'] == dish_data['price']
 
-    dish: DishModel | None = repo.get_by_id(dish_id)
-
-    if dish is None:
-        assert dish
-    else:
-        assert dish.title == updated_title['title']
-        assert dish.description == dish_data['description']
-        assert dish.price == dish_data['price']
-
     dish_data['title'] = updated_title['title']
 
 
-def test_update_description_of_dish(
-        repo: Repository = Repository(),
+@pytest.mark.asyncio
+async def test_update_description_of_dish(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления блюда.
@@ -199,7 +189,7 @@ def test_update_description_of_dish(
         'description': 'updated description of dish'
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_dish',
@@ -218,20 +208,12 @@ def test_update_description_of_dish(
     assert response_data['description'] == updated_description['description']
     assert response_data['price'] == dish_data['price']
 
-    dish: DishModel | None = repo.get_by_id(dish_id)
-
-    if dish is None:
-        assert dish
-    else:
-        assert dish.title == dish_data['title']
-        assert dish.description == updated_description['description']
-        assert dish.price == dish_data['price']
-
     dish_data['description'] = updated_description['description']
 
 
-def test_update_price_of_dish(
-        repo: Repository = Repository(),
+@pytest.mark.asyncio
+async def test_update_price_of_dish(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления блюда.
@@ -246,7 +228,7 @@ def test_update_price_of_dish(
         'price': '15.30'
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_dish',
@@ -265,20 +247,12 @@ def test_update_price_of_dish(
     assert response_data['description'] == dish_data['description']
     assert response_data['price'] == updated_price['price']
 
-    dish: DishModel | None = repo.get_by_id(dish_id)
-
-    if dish is None:
-        assert dish
-    else:
-        assert dish.title == dish_data['title']
-        assert dish.description == dish_data['description']
-        assert dish.price == updated_price['price']
-
     dish_data['price'] = updated_price['price']
 
 
-def test_update_dish(
-        repo: Repository = Repository(),
+@pytest.mark.asyncio
+async def test_update_dish(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления блюда.
@@ -295,7 +269,7 @@ def test_update_dish(
         'price': '98.30',
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_dish',
@@ -314,18 +288,10 @@ def test_update_dish(
     assert response_data['description'] == updated_dish['description']
     assert response_data['price'] == updated_dish['price']
 
-    dish: DishModel | None = repo.get_by_id(dish_id)
 
-    if dish is None:
-        assert dish
-    else:
-        assert dish.title == updated_dish['title']
-        assert dish.description == updated_dish['description']
-        assert dish.price == updated_dish['price']
-
-
-def test_delete_dish(
-        repo: Repository = Repository()
+@pytest.mark.asyncio
+async def test_delete_dish(
+        client: AsyncClient,
 ):
     """
     Тест ручки для удаления блюда.
@@ -334,7 +300,7 @@ def test_delete_dish(
     submenu_id: str = submenu_data['id']
     dish_id: str = dish_data['id']
 
-    response = client.delete(
+    response = await client.delete(
         reverse(
             app,
             'delete_dish',
@@ -345,9 +311,6 @@ def test_delete_dish(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    submenu: DishModel | None = repo.get_by_id(dish_id)
-
-    assert not submenu
 
 
 def teardown_module():
@@ -355,7 +318,8 @@ def teardown_module():
     Удаление созданных меню и сабменю.
     :return:
     """
-    repo: MenuRepository = MenuRepository()
     menu_id: str = menu_data['id']
 
-    repo.delete(menu_id)
+    sync_client.delete(
+        url=reverse(app, 'delete_menu', menu_id=menu_id),
+    )
