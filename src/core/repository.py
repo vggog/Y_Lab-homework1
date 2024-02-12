@@ -4,7 +4,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.sql.dml import Delete, ReturningUpdate
 
-from .model import BaseModel
+from src.core.model import BaseModel
 
 
 class BaseRepository:
@@ -73,7 +73,7 @@ class BaseRepository:
             self,
             object_id: str,
             async_session: async_sessionmaker[AsyncSession],
-    ):
+    ) -> None:
         stmt: Delete = (
             delete(self._model).
             where(self._model.id == object_id)

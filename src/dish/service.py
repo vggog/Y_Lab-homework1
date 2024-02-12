@@ -35,6 +35,7 @@ class Service(BaseService):
             submenu_id: str,
             background_tasks: BackgroundTasks,
     ) -> list[DishSchema] | dict[str, str]:
+        """Сервис для получения всех блюд"""
         key: str = self.get_key_for_all_datas('dishes', submenu_id)
         all_dishes_from_cache: dict[str, str] | None = await self.cache.get_value(
             key=key
@@ -150,7 +151,7 @@ class Service(BaseService):
             submenu_id: str,
             dish_id: str,
             background_tasks: BackgroundTasks,
-    ):
+    ) -> None:
         """
         Сервис для удаления блюда.
         Для инвалидации удаляет связанные с блюдом меню и подменю.

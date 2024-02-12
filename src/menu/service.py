@@ -61,6 +61,7 @@ class Service(BaseService):
             background_tasks: BackgroundTasks,
             async_session: async_sessionmaker[AsyncSession]
     ) -> list[MenuModel] | list[dict[str, str]]:
+        """Сервис для получения всех меню"""
         key: str = self.get_key_for_all_datas('menus')
         all_menus_from_cache: list[dict[str, str]] = await self.cache.get_value(
             key
@@ -173,7 +174,7 @@ class Service(BaseService):
             menu_id: str,
             background_tasks: BackgroundTasks,
             async_session: async_sessionmaker[AsyncSession]
-    ):
+    ) -> None:
         """Сервис для удаления меню."""
 
         background_tasks.add_task(

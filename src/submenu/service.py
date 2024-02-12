@@ -35,6 +35,7 @@ class Service(BaseService):
             menu_id: str,
             background_tasks: BackgroundTasks,
     ) -> list[SubmenuModel] | list[dict[str, str]]:
+        """Сервис для получения всех подменю"""
         key = self.get_key_for_all_datas('submenus', menu_id)
         all_submenus_from_cache = await self.cache.get_value(key)
         if all_submenus_from_cache is not None:
@@ -145,7 +146,7 @@ class Service(BaseService):
             menu_id: str,
             submenu_id: str,
             background_tasks: BackgroundTasks,
-    ):
+    ) -> None:
         """Сервис для удаления подменю."""
         background_tasks.add_task(
             delete_submenu_invalidate_cache,

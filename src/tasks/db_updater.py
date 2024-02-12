@@ -19,7 +19,7 @@ class DataBaseUpdater:
             entity_id: str,
             entity_url: str,
             entity_data: dict[str, str]
-    ):
+    ) -> str:
         """
         Создать сущность, если она не создана.
         Обновить сущность, если данные устарели.
@@ -34,14 +34,18 @@ class DataBaseUpdater:
                 )
 
             return response.json()['id']
-
-        if response.status_code == 404:
+        elif response.status_code == 404:
             response = requests.post(
                 entity_url,
                 json=entity_data,
             )
 
             return response.json()['id']
+        else:
+            raise Exception(
+                'Ошибка сервера: ',
+                response.status_code
+            )
 
     def check_menu(self, menu: Menu) -> str:
         """
@@ -133,7 +137,7 @@ class DataBaseUpdater:
             self,
             url: str,
             entity_ids: list[str],
-    ):
+    ) -> None:
         """
         Удалить сущность, которой нет в обновлённой базе.
         """
@@ -146,7 +150,7 @@ class DataBaseUpdater:
                     f'{app_config.url_prefix + app_config.menus_postfix}/{entity_id}'
                 )
 
-    def run(self):
+    def run(self) -> None:
         menus_id: list[str] = []
         for menu in self.datas:
             menu_id = self.check_menu(menu)

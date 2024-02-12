@@ -8,7 +8,7 @@ async def set_all_dishes_invalidate_cache(
         key: str,
         datas: list,
         cache: Cache,
-):
+) -> None:
     """Сохранить все блюда в кэш"""
     await cache.set_list_of_values(
         key=key,
@@ -20,7 +20,7 @@ async def set_all_dishes_invalidate_cache(
 async def set_dish_invalidate_cache(
         dish: DishModel,
         cache: Cache,
-):
+) -> None:
     """Сохранить блюдо в кэш"""
     await cache.set_value(
         key=dish.id,
@@ -34,7 +34,7 @@ async def create_dish_invalidate_cache(
         submenu_id: str,
         dish: DishModel,
         cache: Cache,
-):
+) -> None:
     """Инвалидация кэша при создание блюда"""
     await cache.set_value(
         key=dish.id,
@@ -56,7 +56,7 @@ async def update_dish_invalidate_cache(
         dish_id: str,
         dish: DishModel,
         cache: Cache,
-):
+) -> None:
     """Инвалидация кэша при обновление блюда"""
     await cache.delete_value(dish_id)
 
@@ -72,7 +72,7 @@ async def delete_dish_invalidate_cache(
         submenu_id: str,
         dish_id: str,
         cache: Cache,
-):
+) -> None:
     """Инвалидация кэша при удаление блюда"""
     await cache.delete_value(menu_id)
     await cache.delete_value(submenu_id)

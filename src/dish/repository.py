@@ -13,7 +13,7 @@ class Repository(BaseRepository):
             async_session: async_sessionmaker[AsyncSession],
             object_id: str
     ) -> DishModel | None:
-
+        """Получить по блюдо по id"""
         stmt = select(self._model).where(self._model.id == object_id)
 
         async with async_session() as session:

@@ -14,7 +14,7 @@ async def set_full_base_cache(
         key: str,
         datas: list,
         cache: Cache,
-):
+) -> None:
     """Добавление всей базы данных в кэш"""
     await cache.set_list_of_values(
         key=key,
@@ -27,7 +27,7 @@ async def create_menu_invalidate_cache(
         menu_id: str,
         menu: MenuModel,
         cache: Cache,
-):
+) -> None:
     """Ивалидация кэша при создание меню"""
     await cache.set_value(menu_id, menu, MenuSchema)
     await cache.delete_value(BaseService.get_key_for_all_datas('menus'))
@@ -38,7 +38,7 @@ async def update_menu_invalidate_cache(
         menu_id: str,
         menu: MenuModel,
         cache: Cache,
-):
+) -> None:
     """Инвалидация кэша при обновление меню"""
     await cache.delete_value(menu_id)
     await cache.set_value(menu_id, menu, MenuSchema)
@@ -48,7 +48,7 @@ async def get_all_menus_invalidate_cache(
         key: str,
         datas: list,
         cache: Cache,
-):
+) -> None:
     """Добавление всех меню в кэш"""
     await cache.set_list_of_values(
         key=key,
@@ -60,7 +60,7 @@ async def get_all_menus_invalidate_cache(
 async def get_invalidate_cache(
         menu: MenuModel,
         cache: Cache,
-):
+) -> None:
     """Добавление меню в кэш"""
     await cache.set_value(menu.id, menu, MenuSchema)
 
@@ -73,7 +73,7 @@ async def delete_menu_invalidate_cache(
         async_session: async_sessionmaker[AsyncSession] = Depends(
             get_db_session
         ),
-):
+) -> None:
     """Инвалидация кэша при удаление меню."""
     await cache.delete_value(menu_id)
 
