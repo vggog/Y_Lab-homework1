@@ -6,8 +6,21 @@ from src.core.db_session import get_db_session
 from src.core.service import BaseService
 from src.menu.model import MenuModel
 from src.menu.repository import Repository as MenuRepository
-from src.menu.schemas import MenuSchema
+from src.menu.schemas import MenuFullBaseSchema, MenuSchema
 from src.submenu.repository import Repository as SubmenuRepository
+
+
+async def set_full_base_cache(
+        key: str,
+        datas: list,
+        cache: Cache,
+):
+    """Добавление всей базы данных в кэш"""
+    await cache.set_list_of_values(
+        key=key,
+        datas=datas,
+        schema=MenuFullBaseSchema,
+    )
 
 
 async def create_menu_invalidate_cache(
@@ -18,6 +31,7 @@ async def create_menu_invalidate_cache(
     """Ивалидация кэша при создание меню"""
     await cache.set_value(menu_id, menu, MenuSchema)
     await cache.delete_value(BaseService.get_key_for_all_datas('menus'))
+    await cache.delete_value(BaseService.get_key_for_all_datas('full_base'))
 
 
 async def update_menu_invalidate_cache(
@@ -79,3 +93,4 @@ async def delete_menu_invalidate_cache(
         await cache.delete_value(dish.id)
 
     await cache.delete_value(BaseService.get_key_for_all_datas('menus'))
+    await cache.delete_value(BaseService.get_key_for_all_datas('full_base'))

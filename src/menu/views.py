@@ -4,12 +4,30 @@ from starlette import status
 from src.core.db_session import get_db_session
 from src.core.openapi_tags import Tags
 
-from .schemas import CreateMenuSchema, MenuSchema, UpdateMenuSchema
+from .schemas import CreateMenuSchema, MenuFullBaseSchema, MenuSchema, UpdateMenuSchema
 from .service import Service
 
 menus_router = APIRouter(
     prefix='/menus',
 )
+
+
+@menus_router.get(
+    '/fullbase',
+    response_model=list[MenuFullBaseSchema],
+    status_code=status.HTTP_200_OK,
+    summary='Список всех меню, со связанными подменю, со связанными блюдами',
+    tags=[Tags.menus],
+)
+async def full_base(
+        background_tasks: BackgroundTasks,
+        service=Depends(Service),
+        async_session=Depends(get_db_session),
+):
+    return await service.full_base(
+        background_tasks=background_tasks,
+        async_session=async_session
+    )
 
 
 @menus_router.get(

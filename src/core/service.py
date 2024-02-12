@@ -14,16 +14,16 @@ class BaseService:
         """
 
         :param category: Категория сущносности для списка.
-                Может быть только menus, submenus, diches.
+                Может быть только menus, submenus, diches, full_base.
         :param id_: id родительской сущности.
                 Для submenu - menu_id
                 Для dish - submenu_id
         :return ключ для redis:
         """
-        if category not in ('menus', 'submenus', 'dishes'):
+        if category not in ('menus', 'submenus', 'dishes', 'full_base'):
             raise TypeError(
-                'Категория для создания ключа должен быть '
-                'menus, submenus, diches'
+                'Категория для создания ключа должен быть: '
+                'menus, submenus, diches, full_base'
             )
 
         key = ''

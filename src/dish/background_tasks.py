@@ -48,10 +48,7 @@ async def create_dish_invalidate_cache(
         key=BaseService.get_key_for_all_datas('dishes', submenu_id)
     )
     await cache.delete_value(
-        key=BaseService.get_key_for_all_datas('submenus', menu_id)
-    )
-    await cache.delete_value(
-        key=BaseService.get_key_for_all_datas('menus')
+        key=BaseService.get_key_for_all_datas('full_base')
     )
 
 
@@ -84,8 +81,5 @@ async def delete_dish_invalidate_cache(
         key=BaseService.get_key_for_all_datas('dishes', submenu_id)
     )
     await cache.delete_value(
-        key=BaseService.get_key_for_all_datas('submenus', menu_id)
-    )
-    await cache.delete_value(
-        key=BaseService.get_key_for_all_datas('menus')
+        key=BaseService.get_key_for_all_datas('full_base')
     )

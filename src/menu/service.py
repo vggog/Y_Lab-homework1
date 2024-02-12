@@ -8,6 +8,7 @@ from src.menu.background_tasks import (
     delete_menu_invalidate_cache,
     get_all_menus_invalidate_cache,
     get_invalidate_cache,
+    set_full_base_cache,
     update_menu_invalidate_cache,
 )
 from src.menu.model import MenuModel
@@ -27,6 +28,33 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
         self.submenu_repository = submenu_repository
+
+    async def full_base(
+            self,
+            background_tasks: BackgroundTasks,
+            async_session: async_sessionmaker[AsyncSession]
+    ) -> list[MenuModel] | list[dict[str, str]]:
+        """Сервис для получения всех меню, со связанными подменю, со связанными блюдами."""
+        key: str = self.get_key_for_all_datas('full_base')
+        full_base_from_cache: list[dict[str, str]] = await self.cache.get_value(
+            key
+        )
+
+        if full_base_from_cache is not None:
+            return full_base_from_cache
+
+        full_base: list[MenuModel] = await self.repository.get_full_base(
+            async_session
+        )
+
+        background_tasks.add_task(
+            set_full_base_cache,
+            key=key,
+            datas=full_base,
+            cache=self.cache,
+        )
+
+        return full_base
 
     async def get_all_menus(
             self,

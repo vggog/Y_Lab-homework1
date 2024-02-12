@@ -66,20 +66,6 @@ services:
       timeout: 30s
       retries: 5
 
-  celery:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    container_name: celery
-    restart: always
-    networks:
-      - ylab-network
-    command: [ "celery", "--app=src.tasks.tasks:celery", "worker", "-l", "INFO" ]
-    depends_on:
-      - back
-
 networks:
   ylab-network:
 

@@ -11,7 +11,6 @@ class CreateSubmenuSchema(BaseModel):
 class SubmenuSchema(CreateSubmenuSchema):
     id: str
     dishes_count: int
-    dishes: list[DishSchema]
 
     class Config:
         from_attributes = True
@@ -20,3 +19,7 @@ class SubmenuSchema(CreateSubmenuSchema):
 class UpdateSubmenuSchema(BaseModel):
     title: str | None = None
     description: str | None = None
+
+
+class SubmenuFullBaseSchema(SubmenuSchema):
+    dishes: list[DishSchema]
