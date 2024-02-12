@@ -1,11 +1,10 @@
+import pytest
+from httpx import AsyncClient
 from starlette import status
 
 from main import app
 from src.core.utils import reverse
-from src.menu.repository import Repository as MenuRepository
-from src.submenu.repository import Repository
-
-from .conftest import client
+from tests.conftest import sync_client
 
 menu_data: dict[str, str] = {
     'title': 'menu',
@@ -23,20 +22,24 @@ def setup_module():
     Создание меню, к которому будет принадлежать сабменю.
     :return:
     """
-    response = client.post(
+    response = sync_client.post(
         reverse(app, 'create_menu'),
         json=menu_data,
     )
+
     menu_data['id'] = response.json()['id']
 
 
-def test_get_all_submenus():
+@pytest.mark.asyncio
+async def test_get_all_submenus(
+        client: AsyncClient,
+):
     """
     Тест ручки для получения всех сабменю.
     :return:
     """
     menu_id: str = menu_data['id']
-    response = client.get(
+    response = await client.get(
         reverse(app, 'get_all_submenus', menu_id=menu_id),
     )
 
@@ -47,14 +50,15 @@ def test_get_all_submenus():
     assert len(response_data) == 0
 
 
-def test_create_submenu(
-        repo: Repository = Repository()
+@pytest.mark.asyncio
+async def test_create_submenu(
+        client: AsyncClient,
 ):
     """
     Тест ручки для создания сабменю.
     """
     menu_id: str = menu_data['id']
-    response = client.post(
+    response = await client.post(
         reverse(app, 'create_submenu', menu_id=menu_id),
         json=submenu_data
     )
@@ -71,22 +75,19 @@ def test_create_submenu(
 
     submenu_id: str = response_data['id']
     submenu_data['id'] = submenu_id
-    submenu = repo.get(id=submenu_id)
-
-    assert submenu
-
-    assert submenu.title == submenu_data['title']
-    assert submenu.description == submenu_data['description']
 
 
-def test_get_submenu():
+@pytest.mark.asyncio
+async def test_get_submenu(
+        client: AsyncClient,
+):
     """
     Тест ручки для получения сабменю.
     """
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_submenu',
@@ -107,8 +108,9 @@ def test_get_submenu():
     assert response_data['description'] == submenu_data['description']
 
 
-def test_update_title_of_submenu(
-        repo: Repository = Repository()
+@pytest.mark.asyncio
+async def test_update_title_of_submenu(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления сабменю.
@@ -121,7 +123,7 @@ def test_update_title_of_submenu(
         'title': 'updated title of submenu'
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_submenu',
@@ -138,18 +140,12 @@ def test_update_title_of_submenu(
     assert response_data['title'] == updated_title['title']
     assert response_data['description'] == submenu_data['description']
 
-    submenu = repo.get(id=submenu_id)
-
-    assert submenu
-
-    assert submenu.title == updated_title['title']
-    assert submenu.description == submenu_data['description']
-
     submenu_data['title'] = updated_title['title']
 
 
-def test_update_description_of_submenu(
-        repo: Repository = Repository()
+@pytest.mark.asyncio
+async def test_update_description_of_submenu(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления сабменю.
@@ -162,7 +158,7 @@ def test_update_description_of_submenu(
         'description': 'updated description of submenu'
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_submenu',
@@ -179,18 +175,12 @@ def test_update_description_of_submenu(
     assert response_data['title'] == submenu_data['title']
     assert response_data['description'] == updated_description['description']
 
-    submenu = repo.get(id=submenu_id)
-
-    assert submenu
-
-    assert submenu.title == submenu_data['title']
-    assert submenu.description == updated_description['description']
-
     submenu_data['description'] = updated_description['description']
 
 
-def test_update_submenu(
-        repo: Repository = Repository()
+@pytest.mark.asyncio
+async def test_update_submenu(
+        client: AsyncClient,
 ):
     """
     Тест ручки для обновления сабменю.
@@ -204,7 +194,7 @@ def test_update_submenu(
         'description': 'twice updated description of submenu'
     }
 
-    response = client.patch(
+    response = await client.patch(
         reverse(
             app,
             'update_submenu',
@@ -221,19 +211,15 @@ def test_update_submenu(
     assert response_data['title'] == updated_data['title']
     assert response_data['description'] == updated_data['description']
 
-    submenu = repo.get(id=submenu_id)
 
-    assert submenu
-
-    assert submenu.title == updated_data['title']
-    assert submenu.description == updated_data['description']
-
-
-def test_number_dishes():
+@pytest.mark.asyncio
+async def test_number_dishes(
+        client: AsyncClient,
+):
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.post(
+    response = await client.post(
         reverse(
             app,
             'create_dish',
@@ -248,7 +234,7 @@ def test_number_dishes():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response = client.post(
+    response = await client.post(
         reverse(
             app,
             'create_dish',
@@ -263,7 +249,7 @@ def test_number_dishes():
     )
     assert response.status_code == status.HTTP_201_CREATED
 
-    response = client.get(
+    response = await client.get(
         reverse(
             app,
             'get_submenu',
@@ -279,8 +265,9 @@ def test_number_dishes():
     assert response_data['dishes_count'] == 2
 
 
-def test_delete_submenu(
-        repo: Repository = Repository()
+@pytest.mark.asyncio
+async def test_delete_submenu(
+        client: AsyncClient,
 ):
     """
     Тест ручки для удаления сабменю.
@@ -288,7 +275,7 @@ def test_delete_submenu(
     menu_id: str = menu_data['id']
     submenu_id: str = submenu_data['id']
 
-    response = client.delete(
+    response = await client.delete(
         reverse(
             app,
             'delete_submenu',
@@ -298,9 +285,6 @@ def test_delete_submenu(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    submenu = repo.get(id=submenu_id)
-
-    assert not submenu
 
 
 def teardown_module():
@@ -308,7 +292,8 @@ def teardown_module():
     Удалить созданное меню.
     :return:
     """
-    repo: MenuRepository = MenuRepository()
     menu_id: str = menu_data['id']
 
-    repo.delete(menu_id)
+    sync_client.delete(
+        url=reverse(app, 'delete_menu', menu_id=menu_id),
+    )

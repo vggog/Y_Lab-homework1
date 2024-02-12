@@ -66,7 +66,7 @@ class Service(BaseService):
         if menu is None:
             return None
 
-        self.cache.set_value(menu.id, menu, MenuSchema)
+        await self.cache.set_value(menu.id, menu, MenuSchema)
 
         return menu
 
