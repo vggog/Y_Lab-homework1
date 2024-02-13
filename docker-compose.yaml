@@ -66,6 +66,20 @@ services:
       timeout: 30s
       retries: 5
 
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    container_name: celery-beat
+    restart: always
+    networks:
+      - ylab-network
+    command: [ "celery", "--app=src.tasks.tasks:celery", "beat" ]
+    depends_on:
+      - back
+
   celery:
     build:
       context: .
@@ -78,7 +92,7 @@ services:
       - ylab-network
     command: [ "celery", "--app=src.tasks.tasks:celery", "worker", "-l", "INFO" ]
     depends_on:
-      - back
+      - celery-beat
 
 networks:
   ylab-network:
