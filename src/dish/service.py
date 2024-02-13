@@ -30,6 +30,12 @@ class Service(BaseService):
         self.repository = repository
         self.cache = cache
 
+    async def _price_with_discount(self, price: float, dish_id: str) -> float:
+        """Выдаёт цену за блюдо с учётом скидки."""
+        discount: int = await self.cache.get_discount_of_dish(dish_id)
+
+        return price * ((100 - discount) / 100)
+
     async def get_all_dishes(
             self,
             submenu_id: str,
@@ -47,6 +53,11 @@ class Service(BaseService):
             submenu_id=submenu_id,
             async_session=self.async_session,
         )
+
+        for dish in all_dishes:
+            dish.price = str(
+                await self._price_with_discount(float(dish.price), dish.id)
+            )
 
         background_tasks.add_task(
             set_all_dishes_invalidate_cache,
@@ -77,6 +88,10 @@ class Service(BaseService):
         )
         if dish is None:
             return None
+
+        dish.price = str(
+            await self._price_with_discount(float(dish.price), dish.id)
+        )
 
         background_tasks.add_task(
             set_dish_invalidate_cache,
@@ -135,6 +150,10 @@ class Service(BaseService):
         )
         if dish is None:
             return dish
+
+        dish.price = str(
+            await self._price_with_discount(float(dish.price), dish.id)
+        )
 
         background_tasks.add_task(
             update_dish_invalidate_cache,

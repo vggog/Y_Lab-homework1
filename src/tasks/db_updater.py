@@ -1,3 +1,4 @@
+from src.core.cache import Cache
 from src.core.db_session import get_db_session
 from src.core.repository import BaseRepository
 from src.dish.repository import Repository as DishRepository
@@ -8,6 +9,7 @@ from src.tasks.schemas import Dish, Menu, Submenu
 
 class DataBaseUpdater:
     datas: list[Menu]
+    cache: Cache = Cache()
 
     def __init__(self, datas: list[Menu]):
         self.datas = datas
@@ -106,6 +108,10 @@ class DataBaseUpdater:
                 submenu_id=submenu_id,
                 dish=dish,
             )
+            await self.cache.append_discounts(
+                dish_id=dish_id,
+                disc=dish.discount
+            )
             dishes_id.append(dish_id)
 
         dish_repository = DishRepository()
@@ -157,6 +163,8 @@ class DataBaseUpdater:
                 )
 
     async def run(self) -> None:
+        await self.cache.delete_value('discounts')
+
         menus_id: list[str] = []
         for menu in self.datas:
             menu_id = await self.check_menu(menu)
