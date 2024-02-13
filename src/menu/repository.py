@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import select
+from sqlalchemy import Result, Select, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import joinedload
 
@@ -19,7 +19,7 @@ class Repository(BaseRepository):
             async_session: async_sessionmaker[AsyncSession],
     ) -> Sequence[DishModel]:
         """Метод для получения всех блюд, принадлежащих меню"""
-        stmt = select(DishModel).filter(
+        stmt: Select = select(DishModel).filter(
             MenuModel.id == SubmenuModel.menu_id
         ).filter(
             SubmenuModel.id == DishModel.submenu_id
@@ -28,7 +28,7 @@ class Repository(BaseRepository):
         )
 
         async with async_session() as session:
-            res = await session.execute(stmt)
+            res: Result = await session.execute(stmt)
 
         return res.scalars().all()
 
@@ -37,11 +37,11 @@ class Repository(BaseRepository):
             async_session: async_sessionmaker[AsyncSession],
     ) -> Sequence[MenuModel]:
         """Метод для получения всех меню, со связанными подменю, со связанными блюдами"""
-        stmt = select(MenuModel).options(
+        stmt: Select = select(MenuModel).options(
             joinedload(MenuModel.submenus).subqueryload(SubmenuModel.dishes)
         )
 
         async with async_session() as session:
-            res = await session.execute(stmt)
+            res: Result = await session.execute(stmt)
 
         return res.unique().scalars().all()

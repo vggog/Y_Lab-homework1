@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import Result, Select, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.sql.dml import Delete, ReturningUpdate
 
@@ -15,7 +15,7 @@ class BaseRepository:
             async_session: async_sessionmaker[AsyncSession],
             **filters
     ) -> Sequence[BaseModel]:
-        stmt = select(self._model).filter_by(**filters)
+        stmt: Select = select(self._model).filter_by(**filters)
         async with async_session() as session:
             res = await session.execute(stmt)
 
@@ -26,7 +26,7 @@ class BaseRepository:
             async_session: async_sessionmaker[AsyncSession],
             **filters
     ) -> BaseModel | None:
-        stmt = select(self._model).filter_by(**filters)
+        stmt: Select = select(self._model).filter_by(**filters)
 
         async with async_session() as session:
             res = await session.execute(stmt)
@@ -63,7 +63,7 @@ class BaseRepository:
             await session.execute(stmt)
             await session.commit()
 
-            res = await session.execute(
+            res: Result = await session.execute(
                 select(self._model).where(self._model.id == object_id)
             )
 

@@ -2,9 +2,9 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from starlette import status
 
 from src.core.openapi_tags import Tags
-
-from .schemas import CreateDishSchema, DishSchema, UpdateDishSchema
-from .service import Service
+from src.dish.model import DishModel
+from src.dish.schemas import CreateDishSchema, DishSchema, UpdateDishSchema
+from src.dish.service import Service
 
 dish_router = APIRouter(
     prefix='/menus/{menu_id}/submenus/{submenu_id}/dishes',
@@ -23,7 +23,7 @@ async def get_all_dishes(
         submenu_id: str,
         background_tasks: BackgroundTasks,
         service=Depends(Service),
-) -> list[DishSchema]:
+) -> list[DishModel]:
     return await service.get_all_dishes(
         submenu_id=submenu_id,
         background_tasks=background_tasks,
@@ -42,8 +42,8 @@ async def get_dish(
         dish_id: str,
         background_tasks: BackgroundTasks,
         service=Depends(Service),
-) -> DishSchema:
-    dish = await service.get_dish(
+) -> DishModel:
+    dish: DishModel | None = await service.get_dish(
         dish_id,
         background_tasks=background_tasks,
     )
@@ -69,7 +69,7 @@ async def create_dish(
         background_tasks: BackgroundTasks,
         created_dish: CreateDishSchema,
         service=Depends(Service),
-) -> DishSchema:
+) -> DishModel:
     return await service.create_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,
@@ -91,8 +91,8 @@ async def update_dish(
         updated_dish: UpdateDishSchema,
         background_tasks: BackgroundTasks,
         service=Depends(Service),
-) -> DishSchema:
-    dish = await service.update_dish(
+) -> DishModel:
+    dish: DishModel | None = await service.update_dish(
         dish_id=dish_id,
         updated_data=updated_dish,
         background_tasks=background_tasks,
@@ -118,7 +118,7 @@ async def delete_dish(
         dish_id: str,
         background_tasks: BackgroundTasks,
         service=Depends(Service),
-):
+) -> None:
     await service.delete_dish(
         menu_id=menu_id,
         submenu_id=submenu_id,

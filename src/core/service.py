@@ -12,7 +12,6 @@ class BaseService:
     @staticmethod
     def get_key_for_all_datas(category: str, id_: str = '') -> str:
         """
-
         :param category: Категория сущносности для списка.
                 Может быть только menus, submenus, diches, full_base.
         :param id_: id родительской сущности.

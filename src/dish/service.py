@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import BackgroundTasks, Depends
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -13,7 +15,7 @@ from src.dish.background_tasks import (
 )
 from src.dish.model import DishModel
 from src.dish.repository import Repository
-from src.dish.schemas import CreateDishSchema, DishSchema, UpdateDishSchema
+from src.dish.schemas import CreateDishSchema, UpdateDishSchema
 
 
 class Service(BaseService):
@@ -40,16 +42,16 @@ class Service(BaseService):
             self,
             submenu_id: str,
             background_tasks: BackgroundTasks,
-    ) -> list[DishSchema] | dict[str, str]:
+    ) -> list[DishModel] | dict[str, str]:
         """Сервис для получения всех блюд"""
         key: str = self.get_key_for_all_datas('dishes', submenu_id)
-        all_dishes_from_cache: dict[str, str] | None = await self.cache.get_value(
+        all_dishes_from_cache: dict[str, Any] | None = await self.cache.get_value(
             key=key
         )
         if all_dishes_from_cache is not None:
             return all_dishes_from_cache
 
-        all_dishes = await self.repository.get_all(
+        all_dishes: list[DishModel] = await self.repository.get_all(
             submenu_id=submenu_id,
             async_session=self.async_session,
         )

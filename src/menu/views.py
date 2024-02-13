@@ -3,9 +3,14 @@ from starlette import status
 
 from src.core.db_session import get_db_session
 from src.core.openapi_tags import Tags
-
-from .schemas import CreateMenuSchema, MenuFullBaseSchema, MenuSchema, UpdateMenuSchema
-from .service import Service
+from src.menu.model import MenuModel
+from src.menu.schemas import (
+    CreateMenuSchema,
+    MenuFullBaseSchema,
+    MenuSchema,
+    UpdateMenuSchema,
+)
+from src.menu.service import Service
 
 menus_router = APIRouter(
     prefix='/menus',
@@ -23,7 +28,7 @@ async def full_base(
         background_tasks: BackgroundTasks,
         service=Depends(Service),
         async_session=Depends(get_db_session),
-):
+) -> MenuModel:
     return await service.full_base(
         background_tasks=background_tasks,
         async_session=async_session
@@ -41,7 +46,7 @@ async def get_all_menus(
         background_tasks: BackgroundTasks,
         service=Depends(Service),
         async_session=Depends(get_db_session),
-) -> list[MenuSchema]:
+) -> list[MenuModel]:
     return await service.get_all_menus(
         async_session=async_session,
         background_tasks=background_tasks,
@@ -61,8 +66,8 @@ async def get_menu_by_id(
         background_tasks: BackgroundTasks,
         service=Depends(Service),
         async_session=Depends(get_db_session),
-) -> MenuSchema:
-    menu = await service.get_menu(
+) -> MenuModel:
+    menu: MenuModel | None = await service.get_menu(
         menu_id,
         async_session=async_session,
         background_tasks=background_tasks,
@@ -89,7 +94,7 @@ async def create_menu(
         background_tasks: BackgroundTasks,
         service=Depends(Service),
         async_session=Depends(get_db_session),
-) -> MenuSchema:
+) -> MenuModel:
     return await service.create_menu(
         created_menu,
         async_session=async_session,
@@ -111,8 +116,8 @@ async def update_menu(
         background_tasks: BackgroundTasks,
         service=Depends(Service),
         async_session=Depends(get_db_session),
-) -> MenuSchema:
-    updated_menu = await service.update_menu(
+) -> MenuModel:
+    updated_menu: MenuModel | None = await service.update_menu(
         menu_id,
         update_menu_data,
         async_session=async_session,
@@ -140,7 +145,7 @@ async def delete_menu(
         background_tasks: BackgroundTasks,
         service=Depends(Service),
         async_session=Depends(get_db_session),
-):
+) -> None:
     await service.delete_menu(
         menu_id,
         async_session=async_session,

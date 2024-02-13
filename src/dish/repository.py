@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import Result, Select, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.repository import BaseRepository
@@ -14,9 +14,9 @@ class Repository(BaseRepository):
             object_id: str
     ) -> DishModel | None:
         """Получить по блюдо по id"""
-        stmt = select(self._model).where(self._model.id == object_id)
+        stmt: Select = select(self._model).where(self._model.id == object_id)
 
         async with async_session() as session:
-            res = await session.execute(stmt)
+            res: Result = await session.execute(stmt)
 
         return res.scalars().first()
