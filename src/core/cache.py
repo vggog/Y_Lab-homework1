@@ -69,13 +69,11 @@ class Cache:
 
     async def get_discounts(self) -> dict[str, int]:
         """Получить словарь со скидками"""
-        discounts: dict[str, int] = json.loads(
-            await self._redis_client().get(name='discounts')
-        )
+        discounts: str = await self._redis_client().get(name='discounts')
         if discounts is None:
             return {}
 
-        return discounts
+        return json.loads(discounts)
 
     async def get_discount_of_dish(self, dish_id: str) -> int:
         """
